@@ -1,16 +1,13 @@
 package academy.devdojo.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("v1/heroes")
 public class HeroController {
-    private static final List<String> HEROES = List.of("Ryuko Matoi", "Luffy", "Percy Jackson");
+    private static final List<String> HEROES = List.of("Ryuko", "Luffy", "Percy");
     @GetMapping
     public List<String> listAllHeroes() {
         return HEROES;
@@ -28,5 +25,12 @@ public class HeroController {
         return HEROES.stream()
                 .filter(names::contains)
                 .toList();
+    }
+
+    @GetMapping("{name}")
+    public String findByName(@PathVariable String name) {
+        return HEROES.stream()
+                .filter(hero -> hero.equalsIgnoreCase(name))
+                .findFirst().orElse("");
     }
 }
