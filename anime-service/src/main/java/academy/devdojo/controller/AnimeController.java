@@ -28,7 +28,7 @@ public class AnimeController {
     }
 
     @GetMapping("{id}")
-    public Anime filterById(@PathVariable Long id){
+    public Anime findById(@PathVariable Long id){
         return Anime.getAnimes().stream()
                 .filter(anime -> anime.getId().equals(id))
                 .findFirst()
