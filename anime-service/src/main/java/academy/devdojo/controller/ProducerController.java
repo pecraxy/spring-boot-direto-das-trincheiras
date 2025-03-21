@@ -31,7 +31,6 @@ public class ProducerController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
             headers = "x-api-key")
     public ResponseEntity<ProducerGetResponse> save(@RequestBody ProducerPostRequest producerPostRequest, @RequestHeader HttpHeaders headers) {
-        log.info("{}", headers);
         Producer producer = Producer.builder()
                 .id(ThreadLocalRandom.current().nextLong(1, 100))
                 .name(producerPostRequest.getName())

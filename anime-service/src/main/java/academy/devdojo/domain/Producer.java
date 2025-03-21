@@ -16,6 +16,7 @@ import java.util.List;
 public class Producer {
     private Long id;
     private String name;
+    private String address;
     private LocalDateTime createdAt;
     @Getter
     private static List<Producer> producers = new ArrayList<>();
