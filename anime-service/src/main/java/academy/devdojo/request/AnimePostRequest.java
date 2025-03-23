@@ -7,6 +7,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ProducerPostRequest {
+public class AnimePostRequest {
     private String name;
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
@@ -23,10 +24,12 @@ public class ProducerController {
 
     @GetMapping
     public ResponseEntity<List<ProducerGetResponse>> listAll(@RequestParam(required = false) String name) {
-        if (name == null) return ResponseEntity.ok(Producer.getProducers().stream().map(MAPPER::toProducerGetResponse).toList());
-        var response = Producer.getProducers().stream()
+
+        var producers = Producer.getProducers();
+        var producerGetResponseList = MAPPER.toProducerGetResponseList(producers);
+        if (name == null) return ResponseEntity.ok(producerGetResponseList);
+        var response = producerGetResponseList.stream()
                 .filter(producer -> producer.getName().contains(name))
-                .map(MAPPER::toProducerGetResponse)
                 .toList();
         return ResponseEntity.ok(response);
     }
