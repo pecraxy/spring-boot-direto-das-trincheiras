@@ -1,6 +1,7 @@
 package academy.devdojo.controller;
 
 import academy.devdojo.domain.Anime;
+import academy.devdojo.domain.Anime;
 import academy.devdojo.mapper.AnimeMapper;
 import academy.devdojo.request.AnimePostRequest;
 import academy.devdojo.response.AnimeGetResponse;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
@@ -21,7 +24,7 @@ public class AnimeController {
     private static final AnimeMapper MAPPER = Mappers.getMapper(AnimeMapper.class);
 
     @GetMapping
-    public ResponseEntity<List<AnimeGetResponse>> listAll(@RequestParam(required = false) String name){
+    public ResponseEntity<List<AnimeGetResponse>> listAll(@RequestParam(required = false) String name) {
         log.debug("Request received to list all animes, param name {}", name);
         var animeList = Anime.getAnimes();
         var animeGetResponseList = MAPPER.toAnimeGetResponseList(animeList);
@@ -33,7 +36,7 @@ public class AnimeController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AnimePostResponse> save(@RequestBody AnimePostRequest request){
+    public ResponseEntity<AnimePostResponse> save(@RequestBody AnimePostRequest request) {
         log.debug("Request received to create a new Anime, anime: {}", request);
         Anime anime = MAPPER.toAnime(request);
         Anime.getAnimes().add(anime);
@@ -42,12 +45,14 @@ public class AnimeController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AnimeGetResponse> findById(@PathVariable Long id){
+    public ResponseEntity<AnimeGetResponse> findById(@PathVariable Long id) {
         var response = Anime.getAnimes().stream()
                 .filter(anime -> anime.getId().equals(id))
                 .findFirst()
                 .map(MAPPER::toAnimeGetResponse)
-                .orElse(null);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Anime not found"));
         return ResponseEntity.ok(response);
     }
+
+
 }

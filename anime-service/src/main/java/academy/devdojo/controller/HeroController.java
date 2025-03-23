@@ -8,6 +8,7 @@ import java.util.List;
 @RequestMapping("v1/heroes")
 public class HeroController {
     private static final List<String> HEROES = List.of("Ryuko", "Luffy", "Percy");
+
     @GetMapping
     public List<String> listAllHeroes() {
         return HEROES;
