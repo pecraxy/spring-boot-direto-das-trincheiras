@@ -4,6 +4,7 @@ import academy.devdojo.domain.Producer;
 import academy.devdojo.mapper.ProducerMapper;
 import academy.devdojo.request.ProducerPostRequest;
 import academy.devdojo.response.ProducerGetResponse;
+import academy.devdojo.response.ProducerPostResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class ProducerController {
 
     @GetMapping
     public ResponseEntity<List<ProducerGetResponse>> listAll(@RequestParam(required = false) String name) {
-
+        log.debug("Request received to list all producers, param name {}", name);
         var producers = Producer.getProducers();
         var producerGetResponseList = MAPPER.toProducerGetResponseList(producers);
         if (name == null) return ResponseEntity.ok(producerGetResponseList);
@@ -36,19 +37,21 @@ public class ProducerController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE,
             headers = "x-api-key")
-    public ResponseEntity<ProducerGetResponse> save(@RequestBody ProducerPostRequest producerPostRequest, @RequestHeader HttpHeaders headers) {
-        log.info("{}", headers);
-        var producer = MAPPER.toProducer(producerPostRequest);
+    public ResponseEntity<ProducerPostResponse> save(@RequestBody ProducerPostRequest request, @RequestHeader HttpHeaders headers) {
+        log.debug("Request received to create a new producer, producer: {}", request);
+        var producer = MAPPER.toProducer(request);
         Producer.getProducers().add(producer);
-        var response = MAPPER.toProducerGetResponse(producer);
+        var response = MAPPER.toProducerPostResponse(producer);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("{id}")
-    public Producer findById(@PathVariable Long id) {
-        return Producer.getProducers().stream()
+    public ResponseEntity<ProducerGetResponse> findById(@PathVariable Long id) {
+        var response = Producer.getProducers().stream()
                 .filter(producer -> producer.getId().equals(id))
                 .findFirst()
+                .map(MAPPER::toProducerGetResponse)
                 .orElse(null);
+        return ResponseEntity.ok(response);
     }
 }
