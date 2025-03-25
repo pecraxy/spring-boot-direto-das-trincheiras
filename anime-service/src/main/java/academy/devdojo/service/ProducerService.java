@@ -31,6 +31,10 @@ public class ProducerService {
         repository.delete(producerToDelete);
     }
 
-    public void update()
+    public void update(Producer producerToUpdate){
+        Producer producer = findByIdOrThrowNotFound(producerToUpdate.getId());
+        producerToUpdate.setCreatedAt(producer.getCreatedAt());
+        repository.update(producerToUpdate);
+    }
 
 }
