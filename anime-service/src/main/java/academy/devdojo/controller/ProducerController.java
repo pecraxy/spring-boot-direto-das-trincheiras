@@ -31,16 +31,22 @@ public class ProducerController {
     @GetMapping
     public ResponseEntity<List<ProducerGetResponse>> listAll(@RequestParam(required = false) String name) {
         log.debug("Request received to list all producers, param name {}", name);
+
         var producers = service.findAll(name);
+
         var producerGetResponses = MAPPER.toProducerGetResponseList(producers);
+
         return ResponseEntity.ok(producerGetResponses);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<ProducerGetResponse> findById(@PathVariable Long id) {
         log.debug("Request to find producer by id {}", id);
+
         var producer = service.findByIdOrThrowNotFound(id);
+
         var response = MAPPER.toProducerGetResponse(producer);
+
         return ResponseEntity.ok(response);
     }
 
@@ -48,9 +54,13 @@ public class ProducerController {
             headers = "x-api-key")
     public ResponseEntity<ProducerPostResponse> save(@RequestBody ProducerPostRequest request, @RequestHeader HttpHeaders headers) {
         log.debug("Request received to create a new producer, producer: {}", request);
+
         var producer = MAPPER.toProducer(request);
+
         Producer producerSaved = service.save(producer);
+
         var response = MAPPER.toProducerPostResponse(producerSaved);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -59,24 +69,20 @@ public class ProducerController {
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         log.debug("Request to delete producer by id: {}", id);
-        Producer producerToDelete = Producer.getProducers().stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producer not found"));
-        Producer.getProducers().remove(producerToDelete);
+
+        service.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping
     public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request){
         log.debug("Request to update a producer: {}", request);
-        Producer producerToDelete = Producer.getProducers().stream()
-                .filter(producer -> producer.getId().equals(request.getId()))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producer not found"));
-        Producer updatedProducer = MAPPER.toProducer(request, producerToDelete.getCreatedAt());
-        Producer.getProducers().remove(producerToDelete);
-        Producer.getProducers().add(updatedProducer);
+
+        Producer producerToUpdate = MAPPER.toProducer(request);
+
+        service.update(producerToUpdate);
+
         return ResponseEntity.noContent().build();
     }
 }
