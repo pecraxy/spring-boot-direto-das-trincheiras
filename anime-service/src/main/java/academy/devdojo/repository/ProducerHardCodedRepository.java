@@ -33,7 +33,7 @@ public class ProducerHardCodedRepository {
 
     public List<Producer> findByName(String name){
         log.debug(connection);
-        return producerData.getProducers().stream().filter(producer -> producer.getName().contains(name)).toList();
+        return producerData.getProducers().stream().filter(producer -> producer.getName().equalsIgnoreCase(name)).toList();
     }
 
     public Producer save(Producer producer){
