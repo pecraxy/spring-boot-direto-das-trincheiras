@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -77,5 +78,43 @@ class ProducerHardCodedRepositoryTest {
                 .isNotNull()
                 .hasSize(1)
                 .contains(expectedProducer);
+    }
+
+    @Order(5)
+    @Test
+    @DisplayName("save creates a producer")
+    void save_CreatesAProducer_WhenSuccefull(){
+        BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
+        var producerToSave = Producer.builder()
+                .id(4L)
+                .name("Mappa")
+                .createdAt(LocalDateTime.now())
+                .build();
+        Producer savedProducer = repository.save(producerToSave);
+        Assertions.assertThat(savedProducer)
+                .isEqualTo(producerToSave)
+                .hasNoNullFieldsOrProperties();
+
+        Optional<Producer> producerSavedOptional = repository.findById(producerToSave.getId());
+        Assertions.assertThat(producerSavedOptional)
+                .isPresent()
+                .contains(producerToSave);
+    }
+
+    @Order(6)
+    @Test
+    @DisplayName("delete removes a producer when succefull")
+    void delete_RemovesAProducer_WhenSuccefull(){
+        BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
+        var producerToDelete = producerList.getFirst();
+        repository.delete(producerToDelete);
+        Assertions.assertThat(this.producerList)
+                .doesNotContain(producerToDelete);
+
+        List<Producer> producers = repository.findAll();
+
+        Assertions.assertThat(producers)
+                .isNotEmpty()
+                .dosNo
     }
 }

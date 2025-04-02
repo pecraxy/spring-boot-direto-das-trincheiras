@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,7 +15,6 @@ public class Producer {
     @EqualsAndHashCode.Include
     private Long id;
     private String name;
-    private String address;
     private LocalDateTime createdAt;
 
 }
