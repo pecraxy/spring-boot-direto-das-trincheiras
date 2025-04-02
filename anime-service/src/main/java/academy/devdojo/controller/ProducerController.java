@@ -9,7 +9,6 @@ import academy.devdojo.response.ProducerPostResponse;
 import academy.devdojo.service.ProducerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +22,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ProducerController {
-    private static final ProducerMapper MAPPER = ProducerMapper.INSTANCE;
+    private final ProducerMapper mapper;
     private final ProducerService service;
 
     @GetMapping
@@ -32,7 +31,7 @@ public class ProducerController {
 
         var producers = service.findAll(name);
 
-        var producerGetResponses = MAPPER.toProducerGetResponseList(producers);
+        var producerGetResponses = mapper.toProducerGetResponseList(producers);
 
         return ResponseEntity.ok(producerGetResponses);
     }
@@ -43,7 +42,7 @@ public class ProducerController {
 
         var producer = service.findByIdOrThrowNotFound(id);
 
-        var response = MAPPER.toProducerGetResponse(producer);
+        var response = mapper.toProducerGetResponse(producer);
 
         return ResponseEntity.ok(response);
     }
@@ -53,11 +52,11 @@ public class ProducerController {
     public ResponseEntity<ProducerPostResponse> save(@RequestBody ProducerPostRequest request, @RequestHeader HttpHeaders headers) {
         log.debug("Request received to create a new producer, producer: {}", request);
 
-        var producer = MAPPER.toProducer(request);
+        var producer = mapper.toProducer(request);
 
         Producer producerSaved = service.save(producer);
 
-        var response = MAPPER.toProducerPostResponse(producerSaved);
+        var response = mapper.toProducerPostResponse(producerSaved);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -77,7 +76,7 @@ public class ProducerController {
     public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request){
         log.debug("Request to update a producer: {}", request);
 
-        Producer producerToUpdate = MAPPER.toProducer(request);
+        Producer producerToUpdate = mapper.toProducer(request);
 
         service.update(producerToUpdate);
 
