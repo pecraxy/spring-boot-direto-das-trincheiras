@@ -35,7 +35,7 @@ class ProducerHardCodedRepositoryTest {
     @Test
     @DisplayName("findAll returns a list with all producers")
     @Order(1)
-    void findAll_ReturnAllProducers_WhenSuccefull(){
+    void findAll_ReturnAllProducers_WhenSuccesful(){
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
         var producers = repository.findAll();
         Assertions.assertThat(producers)
@@ -46,7 +46,7 @@ class ProducerHardCodedRepositoryTest {
     @Order(2)
     @Test
     @DisplayName("findById returns a producer with given id")
-    void findById_ReturnsProducer_WhenSuccefull_OrThrowsNotFoundException(){
+    void findById_ReturnsProducer_WhenSuccesful_OrThrowsNotFoundException(){
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
         var expectedProducer = producerList.getFirst();
         var producer = repository.findById(expectedProducer.getId());
@@ -83,7 +83,7 @@ class ProducerHardCodedRepositoryTest {
     @Order(5)
     @Test
     @DisplayName("save creates a producer")
-    void save_CreatesAProducer_WhenSuccefull(){
+    void save_CreatesAProducer_WhenSuccesful(){
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
         var producerToSave = Producer.builder()
                 .id(4L)
@@ -104,7 +104,7 @@ class ProducerHardCodedRepositoryTest {
     @Order(6)
     @Test
     @DisplayName("delete removes a producer when succefull")
-    void delete_RemovesAProducer_WhenSuccefull(){
+    void delete_RemovesAProducer_WhenSuccesful(){
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
         var producerToDelete = producerList.getFirst();
         repository.delete(producerToDelete);
@@ -115,6 +115,23 @@ class ProducerHardCodedRepositoryTest {
 
         Assertions.assertThat(producers)
                 .isNotEmpty()
-                .dosNo
+                .doesNotContain(producerToDelete);
+    }
+
+    @Order(5)
+    @Test
+    @DisplayName("update update a producer")
+    void update_UpdateProducer_WhenSuccesfull(){
+        BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
+        Producer producerToUpdate = this.producerList.getFirst();
+        producerToUpdate.setName("Aniplex");
+
+        repository.update(producerToUpdate);
+
+        Assertions.assertThat(this.producerList.contains(producerToUpdate));
+
+        var producerUpdateOptional = repository.findById(producerToUpdate.getId());
+
+        Assertions.assertThat()
     }
 }
