@@ -53,7 +53,6 @@ class ProducerHardCodedRepositoryTest {
         Assertions.assertThat(producer)
                 .isPresent()
                 .contains(expectedProducer);
-
     }
 
     @Order(3)
