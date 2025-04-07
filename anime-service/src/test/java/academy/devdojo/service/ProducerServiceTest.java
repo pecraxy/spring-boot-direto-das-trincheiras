@@ -9,11 +9,13 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -74,5 +76,43 @@ class ProducerServiceTest {
         Assertions.assertThat(foundProducers)
                 .isNotNull()
                 .isEmpty();
+    }
+
+    @Test
+    @DisplayName("findById returns a producer with given id when succesful")
+    @Order(4)
+    void findById_ReturnsProducerById_WhenSucessful() {
+        var expectedProducer = producerList.getFirst();
+        BDDMockito.when(repository.findById(expectedProducer.getId())).thenReturn(Optional.of(expectedProducer));
+        Producer foundProducer = service.findByIdOrThrowNotFound(expectedProducer.getId());
+        Assertions.assertThat(foundProducer)
+                .isEqualTo(expectedProducer)
+                .isNotNull();
+    }
+
+    @Test
+    @DisplayName("findById throws ResponseSatusException when producer is not found")
+    @Order(5)
+    void findById_ThrowsResponseStatusException_WhenProducerIsNotFound() {
+        var expectedProducer = producerList.getFirst();
+        BDDMockito.when(repository.findById(expectedProducer.getId())).thenReturn(Optional.empty());
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.findByIdOrThrowNotFound(expectedProducer.getId()))
+                .isInstanceOf(ResponseStatusException.class);
+
+    }
+
+    @Order(6)
+    @Test
+    @DisplayName("save creates a producer")
+    void save_CreatesAProducer_WhenSuccesful() {
+        var producerToSave = Producer.builder().id(4L).name("Mappa").createdAt(LocalDateTime.now()).build();
+
+        BDDMockito.when(repository.save(producerToSave)).thenReturn(producerToSave);
+
+        Producer savedProducer = service.save(producerToSave);
+
+        Assertions.assertThat(savedProducer).isEqualTo(producerToSave).hasNoNullFieldsOrProperties();
     }
 }
