@@ -5,6 +5,7 @@ import academy.devdojo.repository.ProducerHardCodedRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -114,5 +115,62 @@ class ProducerServiceTest {
         Producer savedProducer = service.save(producerToSave);
 
         Assertions.assertThat(savedProducer).isEqualTo(producerToSave).hasNoNullFieldsOrProperties();
+    }
+
+    @Order(7)
+    @Test
+    @DisplayName("delete deletes a producer")
+    void delete_DeletesAProducer_WhenSuccesful() {
+        var expectedProducerToDelete = producerList.getFirst();
+
+        BDDMockito.when(repository.findById(expectedProducerToDelete.getId())).thenReturn(Optional.of(expectedProducerToDelete));
+
+        BDDMockito.doNothing().when(repository).delete(expectedProducerToDelete);
+
+        Assertions.assertThatNoException()
+                .isThrownBy(() -> service.delete(expectedProducerToDelete.getId()));
+    }
+
+    @Order(8)
+    @Test
+    @DisplayName("delete throws ResponseStatusException when producer is not found")
+    void delete_ThrowsResponseStatusException_WhenProducerNotFound() {
+        var expectedProducerToDelete = producerList.getFirst();
+
+        BDDMockito.when(repository.findById(expectedProducerToDelete.getId())).thenReturn(Optional.empty());
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.delete(expectedProducerToDelete.getId()))
+                .isInstanceOf(ResponseStatusException.class);
+
+
+    }
+
+    @Order(9)
+    @Test
+    @DisplayName("update update a producer")
+    void update_UpdateProducer_WhenSuccesfull() {
+        var producerToUpdate = producerList.getFirst();
+
+        BDDMockito.when(repository.findById(producerToUpdate.getId())).thenReturn(Optional.of(producerToUpdate));
+
+        producerToUpdate.setName("Aniplex");
+
+        BDDMockito.doNothing().when(repository).update(producerToUpdate);
+
+        Assertions.assertThatNoException().isThrownBy(() -> service.update(producerToUpdate));
+    }
+
+    @Order(10)
+    @Test
+    @DisplayName("update throws ResponseStatusException when producer is not found")
+    void update_ThrowsResponseStatusException_WhenProducerNotFound() {
+        var producerToUpdate = producerList.getFirst();
+
+        BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.update(producerToUpdate))
+                .isInstanceOf(ResponseStatusException.class);
     }
 }
