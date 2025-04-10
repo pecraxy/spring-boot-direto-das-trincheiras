@@ -61,8 +61,6 @@ public class ProducerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-
-
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         log.debug("Request to delete producer by id: {}", id);
