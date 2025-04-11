@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -29,13 +30,15 @@ class ProducerControllerTest {
 
     @MockitoBean
     private ProducerData producerData;
-    private List<Producer> producerList;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
+    private List<Producer> producerList;
+
     @BeforeEach
     void init() {
-        String dateTime = "2025-04-10T16:38:33.2941297";
+        String dateTime = "2025-04-10T16:38:32.2941297";
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
         Producer producer1 = Producer.builder().id(1L).name("Ufotable").createdAt(localDateTime).build();
