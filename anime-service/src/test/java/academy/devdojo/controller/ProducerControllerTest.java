@@ -188,7 +188,7 @@ class ProducerControllerTest {
     @Order(10)
     @Test
     @DisplayName("DELETE v1/producers/99 throws ResponseStatusException 404 when producer is not found")
-    void delete_ThrowsReponseStatusException_WhenProducerIsNotFound() throws Exception {
+    void delete_ThrowsResponseStatusException_WhenProducerIsNotFound() throws Exception {
         BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
         var id = 99L;
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/producers/{id}", id))
