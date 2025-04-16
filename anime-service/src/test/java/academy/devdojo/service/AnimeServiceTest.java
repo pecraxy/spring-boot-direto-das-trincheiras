@@ -1,5 +1,6 @@
 package academy.devdojo.service;
 
+import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.domain.Anime;
 import academy.devdojo.repository.AnimeHardCodedRepository;
 import org.assertj.core.api.Assertions;
@@ -26,16 +27,14 @@ class AnimeServiceTest {
     @Mock
     private AnimeHardCodedRepository repository;
 
+    @InjectMocks
+    private AnimeUtils animeUtils;
+
     private List<Anime> animeList;
 
     @BeforeEach
     void init() {
-        Anime anime1 = Anime.builder().id(1L).name("Saiki Kusuo no Psi Nan").build();
-        Anime anime2 = Anime.builder().id(2L).name("Dragon Ball Z").build();
-        Anime anime3 = Anime.builder().id(3L).name("Sword Art Online").build();
-        Anime anime4 = Anime.builder().id(4L).name("Shangri-la Frontiers").build();
-
-        animeList = new ArrayList<>((List.of(anime1, anime2, anime3, anime4)));
+        animeList = animeUtils.newAnimeList();
     }
 
     @Test
@@ -109,7 +108,7 @@ class AnimeServiceTest {
     @Test
     @DisplayName("save creates a anime")
     void save_CreatesAAnime_WhenSuccesful() {
-        var animeToSave = Anime.builder().id(4L).name("Berserk").build();
+        var animeToSave = animeUtils.newAnimeToSave();
 
         BDDMockito.when(repository.save(animeToSave)).thenReturn(animeToSave);
 
