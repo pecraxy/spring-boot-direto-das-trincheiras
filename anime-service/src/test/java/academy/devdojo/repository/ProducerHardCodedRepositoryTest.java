@@ -1,5 +1,6 @@
 package academy.devdojo.repository;
 
+import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -22,14 +23,14 @@ class ProducerHardCodedRepositoryTest {
     @Mock
     private ProducerData producerData;
 
-    private final List<Producer> producerList = new ArrayList<>();
+    @InjectMocks
+    private ProducerUtils producerUtils;
+
+    private List<Producer> producerList;
 
     @BeforeEach
     void init() {
-        Producer producer1 = Producer.builder().id(1L).name("Ufotable").createdAt(LocalDateTime.now()).build();
-        Producer producer2 = Producer.builder().id(2L).name("Wit Studio").createdAt(LocalDateTime.now()).build();
-        Producer producer3 = Producer.builder().id(3L).name("Studios Ghibli").createdAt(LocalDateTime.now()).build();
-        producerList.addAll(List.of(producer1, producer2, producer3));
+        producerList = producerUtils.newProducerList();
     }
 
     @Test
@@ -84,11 +85,7 @@ class ProducerHardCodedRepositoryTest {
     @DisplayName("save creates a producer")
     void save_CreatesAProducer_WhenSuccesful() {
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
-        var producerToSave = Producer.builder()
-                .id(4L)
-                .name("Mappa")
-                .createdAt(LocalDateTime.now())
-                .build();
+        var producerToSave = producerUtils.newProducerToSave();
         Producer savedProducer = repository.save(producerToSave);
         Assertions.assertThat(savedProducer)
                 .isEqualTo(producerToSave)

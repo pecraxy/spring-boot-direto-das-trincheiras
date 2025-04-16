@@ -1,5 +1,6 @@
 package academy.devdojo.service;
 
+import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
 import academy.devdojo.repository.ProducerHardCodedRepository;
 import org.assertj.core.api.Assertions;
@@ -27,14 +28,14 @@ class ProducerServiceTest {
     @Mock
     private ProducerHardCodedRepository repository;
 
+    @InjectMocks
+    private ProducerUtils producerUtils;
+
     private List<Producer> producerList;
 
     @BeforeEach
     void init() {
-        Producer producer1 = Producer.builder().id(1L).name("Ufotable").createdAt(LocalDateTime.now()).build();
-        Producer producer2 = Producer.builder().id(2L).name("Wit Studio").createdAt(LocalDateTime.now()).build();
-        Producer producer3 = Producer.builder().id(3L).name("Studios Ghibli").createdAt(LocalDateTime.now()).build();
-        producerList = new ArrayList<>(List.of(producer1, producer2, producer3));
+        producerList = producerUtils.newProducerList();
     }
 
     @Test
@@ -108,7 +109,7 @@ class ProducerServiceTest {
     @Test
     @DisplayName("save creates a producer")
     void save_CreatesAProducer_WhenSuccessful() {
-        var producerToSave = Producer.builder().id(4L).name("Mappa").createdAt(LocalDateTime.now()).build();
+        var producerToSave = producerUtils.newProducerToSave();
 
         BDDMockito.when(repository.save(producerToSave)).thenReturn(producerToSave);
 
