@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConnectionConfiguration {
 
-    @Value("${database.mysql.url}")
+    @Value("${database.url}")
     private String url;
-    @Value("${database.mysql.username}")
+    @Value("${database.username}")
     private String username;
-    @Value("${database.mysql.password}")
+    @Value("${database.password}")
     private String password;
 
     @Bean

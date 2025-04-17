@@ -15,13 +15,3 @@ server:
   tomcat:
     threads:
       max: 20
-
-database:
-    mysql:
-      url: localhost:3306
-      username: devdojo
-      password: devdojo
-    mongo:
-      url: localhost:999
-      username: mongo
-      password: mongo

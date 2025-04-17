@@ -1,27 +1,4 @@
-spring:
-  application:
-    name: anime-service
-  threads:
-    virtual:
-      enabled: true
-logging:
-  level:
-    academy.devdojo: debug
-server:
-  servlet:
-    context-path: /
-  error:
-    include-stacktrace: on_param
-  tomcat:
-    threads:
-      max: 20
-
 database:
-    mysql:
-      url: localhost:3306
-      username: devdojo
-      password: devdojo
-    mongo:
-      url: localhost:999
-      username: mongo
-      password: mongo
+    url: localhost:9999
+    username: mongo
+    password: mongo
