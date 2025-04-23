@@ -16,3 +16,7 @@ server:
   tomcat:
     threads:
       max: 20
+database:
+  url: localhost:3306
+  username: devdojo
+  password: devdojo

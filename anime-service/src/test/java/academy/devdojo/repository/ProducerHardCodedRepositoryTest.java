@@ -1,7 +1,10 @@
 package academy.devdojo.repository;
 
 import academy.devdojo.commons.ProducerUtils;
+import academy.devdojo.config.Connection;
 import academy.devdojo.domain.Producer;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,13 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Log4j2
 class ProducerHardCodedRepositoryTest {
     @InjectMocks
     private ProducerHardCodedRepository repository;
@@ -25,6 +27,7 @@ class ProducerHardCodedRepositoryTest {
 
     @InjectMocks
     private ProducerUtils producerUtils;
+
 
     private List<Producer> producerList;
 
