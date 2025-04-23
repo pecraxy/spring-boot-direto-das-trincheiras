@@ -4,6 +4,7 @@ import external.dependency.Connection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class ConnectionConfiguration {
@@ -16,12 +17,14 @@ public class ConnectionConfiguration {
     private String password;
 
     @Bean
+    @Profile("mysql")
     public Connection connectionMySql(){
         return new Connection(url, username, password);
     }
 
     @Bean
+    @Profile("mongo")
     public Connection connectionMongoDB(){
-        return new Connection("localhost", "devdojoMongoDB", "goku");
+        return new Connection(url, username, password);
     }
 }

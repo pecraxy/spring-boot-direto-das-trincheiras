@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 public class ConnectionController {
-    private final Connection connectionMySql;
+    private final Connection connection;
     @GetMapping
     public ResponseEntity<Connection> getConnection(){
-        return ResponseEntity.ok(connectionMySql);
+        return ResponseEntity.ok(connection);
     }
 }
