@@ -4,7 +4,6 @@ import academy.devdojo.domain.Anime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @Repository
@@ -13,28 +12,28 @@ public class AnimeHardCodedRepository {
 
     private final AnimeData animeData;
 
-    public List<Anime> findAll(){
+    public List<Anime> findAll() {
         return animeData.getAnimeList();
     }
 
-    public Optional<Anime> findById(Long id){
+    public Optional<Anime> findById(Long id) {
         return animeData.getAnimeList().stream().filter(anime -> anime.getId().equals(id)).findFirst();
     }
 
-    public List<Anime> findByName(String name){
+    public List<Anime> findByName(String name) {
         return animeData.getAnimeList().stream().filter(anime -> anime.getName().equalsIgnoreCase(name)).toList();
     }
 
-    public Anime save(Anime anime){
+    public Anime save(Anime anime) {
         animeData.getAnimeList().add(anime);
         return anime;
     }
 
-    public void delete(Anime anime){
+    public void delete(Anime anime) {
         animeData.getAnimeList().remove(anime);
     }
 
-    public void update(Anime anime){
+    public void update(Anime anime) {
         delete(anime);
         save(anime);
     }

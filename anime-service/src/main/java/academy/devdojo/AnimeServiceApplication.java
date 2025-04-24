@@ -1,11 +1,13 @@
 package academy.devdojo;
 
-import lombok.extern.log4j.Log4j2;
+import academy.devdojo.config.ConnectionConfigurationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@Log4j2
+
+@EnableConfigurationProperties({ConnectionConfigurationProperties.class})
 public class AnimeServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(AnimeServiceApplication.class, args);

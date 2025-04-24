@@ -71,7 +71,7 @@ public class ProducerController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request){
+    public ResponseEntity<Void> update(@RequestBody ProducerPutRequest request) {
         log.debug("Request to update a producer: {}", request);
 
         Producer producerToUpdate = mapper.toProducer(request);

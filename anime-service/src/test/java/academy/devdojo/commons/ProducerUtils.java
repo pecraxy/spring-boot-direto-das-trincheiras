@@ -7,9 +7,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 @Component
 public class ProducerUtils {
-    public List<Producer> newProducerList(){
+    public List<Producer> newProducerList() {
         String dateTime = "2025-04-10T16:38:32.2941297";
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
@@ -19,7 +20,7 @@ public class ProducerUtils {
         return new ArrayList<>(List.of(producer1, producer2, producer3));
     }
 
-    public Producer newProducerToSave(){
+    public Producer newProducerToSave() {
         return Producer.builder().id(99L).name("Mappa").createdAt(LocalDateTime.now()).build();
     }
 }

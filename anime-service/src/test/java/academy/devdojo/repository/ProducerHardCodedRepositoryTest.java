@@ -1,10 +1,8 @@
 package academy.devdojo.repository;
 
 import academy.devdojo.commons.ProducerUtils;
-import academy.devdojo.config.Connection;
 import academy.devdojo.domain.Producer;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
