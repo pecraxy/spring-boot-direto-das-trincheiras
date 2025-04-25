@@ -148,4 +148,19 @@ class UserHardCodedRepositoryTest {
                 .isPresent()
                 .contains(expectedUser);
     }
+
+    @Test
+    @DisplayName("save creates an User")
+    @Order(9)
+    void save_CreatesAnUser_WhenSuccessful() {
+        var userTosave = User.builder().id(4L).firstName("Asgore").lastName("Dreemur").email("asgore@example.com").build();
+        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        User savedUser = repository.save(userTosave);
+        log.info(savedUser);
+        Optional<User> userOptional = repository.findById(userTosave.getId());
+        Assertions.assertThat(userOptional)
+                .isNotNull()
+                .isPresent()
+                .contains(expectedUser);
+    }
 }
