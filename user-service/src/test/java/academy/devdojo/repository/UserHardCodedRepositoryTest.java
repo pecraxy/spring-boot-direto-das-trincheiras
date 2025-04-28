@@ -1,18 +1,16 @@
 package academy.devdojo.repository;
 
+import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,15 +24,15 @@ class UserHardCodedRepositoryTest {
     @InjectMocks
     private UserHardCodedRepository repository;
 
+    @InjectMocks
+    private UserUtils userUtils;
+
     @Mock
     private UserData userData;
 
     @BeforeEach
-    void init(){
-        User user1 = User.builder().id(1L).firstName("Sunless").lastName("Shadow").email("marcelosemdente@example.com").build();
-        User user2 = User.builder().id(2L).firstName("Kai").lastName("Nightingale").email("williamsuane@example.com").build();
-        User user3 = User.builder().id(3L).firstName("Nephis").lastName("Anvil").email("rezendeevil@example.com").build();
-        userList = new ArrayList<>(List.of(user1, user2, user3));
+    void init() {
+        userList = userUtils.newUserList();
     }
 
     @Test
@@ -43,7 +41,6 @@ class UserHardCodedRepositoryTest {
     void findAll_ReturnsAllUsers_WhenSuccessful() {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findAll();
-        log.info(users);
         Assertions.assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -58,7 +55,7 @@ class UserHardCodedRepositoryTest {
         var expectedProducer = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findByName(expectedProducer.getFirstName(), expectedProducer.getLastName());
-        log.info(users);
+
         Assertions.assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -73,7 +70,7 @@ class UserHardCodedRepositoryTest {
         var expectedProducer = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findByName(null, expectedProducer.getLastName());
-        log.info(users);
+
         Assertions.assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -88,7 +85,7 @@ class UserHardCodedRepositoryTest {
         var expectedProducer = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findByName(expectedProducer.getFirstName(), null);
-        log.info(users);
+
         Assertions.assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -102,7 +99,7 @@ class UserHardCodedRepositoryTest {
     void findByName_ReturnsEmptyList_WhenBothNamesAreNull() {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findByName(null, null);
-        log.info(users);
+
         Assertions.assertThat(users)
                 .isNotNull()
                 .isEmpty();
@@ -115,7 +112,7 @@ class UserHardCodedRepositoryTest {
         var expectedProducer = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findByEmail(expectedProducer.getEmail());
-        log.info(users);
+
         Assertions.assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -129,7 +126,7 @@ class UserHardCodedRepositoryTest {
     void findByEmail_ReturnsEmptyList_WhenEmailIsNull() {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         List<User> users = repository.findByEmail(null);
-        log.info(users);
+
         Assertions.assertThat(users)
                 .isNotNull()
                 .isEmpty();
@@ -150,17 +147,64 @@ class UserHardCodedRepositoryTest {
     }
 
     @Test
-    @DisplayName("save creates an User")
+    @DisplayName("save create an User")
     @Order(9)
-    void save_CreatesAnUser_WhenSuccessful() {
-        var userTosave = User.builder().id(4L).firstName("Asgore").lastName("Dreemur").email("asgore@example.com").build();
+    void save_CreateAnUser_WhenSuccessful() {
+        var userToSave = userUtils.newUserToCreate();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        User savedUser = repository.save(userTosave);
+        User savedUser = repository.save(userToSave);
         log.info(savedUser);
-        Optional<User> userOptional = repository.findById(userTosave.getId());
+
+        Assertions.assertThat(savedUser)
+                .isNotNull()
+                .isEqualTo(userToSave)
+                .hasNoNullFieldsOrProperties();
+
+        Optional<User> userOptional = repository.findById(userToSave.getId());
         Assertions.assertThat(userOptional)
                 .isNotNull()
                 .isPresent()
-                .contains(expectedUser);
+                .contains(userToSave);
+    }
+
+    @Test
+    @DisplayName("delete removes an user")
+    @Order(9)
+    void delete_removesAnUser_WhenSuccessful() {
+        var userToDelete = userList.getFirst();
+        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        repository.delete(userToDelete);
+        Assertions.assertThatNoException()
+                .isThrownBy(() -> repository.delete(userToDelete));
+
+        Assertions.assertThat(this.userList)
+                .isNotEmpty()
+                .doesNotContain(userToDelete);
+
+        List<User> users = repository.findAll();
+
+        Assertions.assertThat(users)
+                .isNotEmpty()
+                .doesNotContain(userToDelete);
+    }
+
+    @Test
+    @DisplayName("update update an user")
+    @Order(10)
+    void update_UpdateAnUser_WhenSuccessful() {
+        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        var userToUpdate = userList.getFirst();
+        userToUpdate.setFirstName("Sunny");
+        repository.update(userToUpdate);
+
+        Assertions.assertThat(this.userList)
+                .contains(userToUpdate);
+
+        Optional<User> userUpdateOptional = repository.findById(userToUpdate.getId());
+        Assertions.assertThat(userUpdateOptional)
+                .isPresent();
+
+        Assertions.assertThat(userUpdateOptional.get().getFirstName())
+                .isEqualTo(userToUpdate.getFirstName());
     }
 }

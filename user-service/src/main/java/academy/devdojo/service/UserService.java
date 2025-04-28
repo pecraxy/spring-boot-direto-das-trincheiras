@@ -16,7 +16,7 @@ public class UserService {
     public final UserHardCodedRepository repository;
 
     public List<User> findAll(@Nullable String firstName, @Nullable String lastName, @Nullable String email) {
-        if (firstName != null && lastName != null) return repository.findByName(firstName, lastName);
+        if (firstName != null || lastName != null) return repository.findByName(firstName, lastName);
         if (email != null) return repository.findByEmail(email);
         return repository.findAll();
     }
@@ -35,6 +35,7 @@ public class UserService {
     }
 
     public void update(User userToUpdate) {
+        User foundUser = findByIdOrElseThrowResponseStatusException(userToUpdate.getId());
         repository.update(userToUpdate);
     }
 
