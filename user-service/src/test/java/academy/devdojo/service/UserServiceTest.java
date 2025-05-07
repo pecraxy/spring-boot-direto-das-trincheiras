@@ -77,7 +77,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     @DisplayName("findAll returns a list with found user when lastName exists")
     void findAll_returnsFoundUser_whenLastNameExists() {
         var expectedUser = userList.getFirst();
@@ -91,7 +91,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     @DisplayName("findAll returns empty list when lastName is not found")
     void findAll_returnsEmptyList_whenLastNameIsNotFound() {
         var lastName = "not-found";
@@ -103,7 +103,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     @DisplayName("findAll returns a list with found user when firstname and lastName exists")
     void findAll_returnsFoundUser_whenFirstNameAndLastNameExists() {
         var expectedUser = userList.getFirst();
@@ -117,7 +117,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     @DisplayName("findAll returns empty list when firstName and lastName are not found")
     void findAll_returnsEmptyList_whenFirstNameAndLastNameAreNotFound() {
         var firstName = "not-found";
@@ -130,7 +130,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     @DisplayName("findAll returns a list with found user when email exists")
     void findAll_returnsFoundUser_whenEmailExists() {
         var expectedUser = userList.getFirst();
@@ -144,7 +144,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     @DisplayName("findAll returns empty list when email is not found")
     void findAll_returnsEmptyList_whenEmailIsNotFound() {
         var email = "notfound@notfound.com";
@@ -156,7 +156,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     @DisplayName("findById returns user when successful")
     void findById_returnsUser_whenSuccessful() {
         var expectedUser = userList.getFirst();
@@ -169,7 +169,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     @DisplayName("findById throws ResponseStatusException when user is not found")
     void findById_ThrowsResponseStatusException_WhenUserIsNotFound() {
         var expectedUser = userList.getFirst();
@@ -182,7 +182,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     @DisplayName("save creates an user")
     void save_createsAnUser_WhenSuccessful() {
         var userToCreate = userUtils.newUserToCreate();
@@ -195,7 +195,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     @DisplayName("delete removes an user")
     void delete_removesAnUser_WhenSuccessful() {
         var expectedUserToDelete = userList.getFirst();
@@ -207,7 +207,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(12)
+    @Order(14)
     @DisplayName("delete throws ResponseStatusException when user is not found")
     void delete_ThrowsResponseStatusException_WhenUserNotFound() {
         var expectedUserToDelete = userList.getFirst();
@@ -220,7 +220,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(13)
+    @Order(15)
     @DisplayName("update updates an User")
     void update_UpdateUser_WhenSuccessful() {
         var expectedUserToUpdate = userList.getFirst();
@@ -233,7 +233,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(14)
+    @Order(16)
     @DisplayName("update throws ResponseStatusException when user is not found")
     void update_ThrowsResponseStatusException_WhenUserNotFound() {
         var expectedUserToUpdate = userList.getFirst();
