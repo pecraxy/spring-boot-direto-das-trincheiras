@@ -109,4 +109,18 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(response));
     }
+
+    @Test
+    @Order(6)
+    @DisplayName("findAll returns a list with found user when firstname and lastName exists")
+    void findAll_returnsFoundUser_whenFirstNameAndLastNameExists() {
+        var expectedUser = userList.getFirst();
+        var firstName = expectedUser.getFirstName();
+        var lastName = expectedUser.getLastName();
+        var response = fileUtils.readSourceFile("")
+        mockMvc.perform(MockMvcRequestBuilders.get(URL)
+                .param("firstName", firstName).param("lastName", lastName))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect()
+    }
 }
