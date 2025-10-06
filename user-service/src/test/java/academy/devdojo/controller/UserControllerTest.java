@@ -277,17 +277,30 @@ class UserControllerTest {
 
     @Test
     @Order(17)
-    @DisplayName("PUT v1/users/1 updates an User")
+    @DisplayName("PUT v1/users updates an User")
     void update_updatesAnUser_WhenSuccessful() throws Exception {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        Long userIdToUpdate = userList.getFirst().getId();
         String request = fileUtils.readSourceFile("users/put-request-user-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.put(URL + "/{id}", userIdToUpdate)
+        mockMvc.perform(MockMvcRequestBuilders.put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @Order(18)
+    @DisplayName("PUT v1/users throws ResponseStatusException 404 when user is not found")
+    void update_throwResponseStatusException() throws Exception {
+        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        String request = fileUtils.readSourceFile("users/put-request-user-404.json");
+        mockMvc.perform(MockMvcRequestBuilders.put(URL)
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("User not found"));
+                .andExpect(MockMvcResultMatchers.status().reason("User not found"));]
+
     }
 
 
