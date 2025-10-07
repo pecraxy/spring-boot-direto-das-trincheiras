@@ -7,6 +7,9 @@ import academy.devdojo.repository.UserData;
 import academy.devdojo.repository.UserHardCodedRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @WebMvcTest(controllers = UserController.class)
@@ -304,11 +308,12 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().reason("User not found"));
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("postUserBadRequestSource")
     @Order(19)
     @DisplayName("POST v1/users returns bad request when fields are empty")
-    void save_returnsBadRequest_WhenFieldsAreEmpty() throws Exception {
-        String request = fileUtils.readSourceFile("users/post-request-user-empty-fields-400.json");
+    void save_returnsBadRequest_WhenFieldsAreEmpty(String fileName, List<String> errors) throws Exception {
+        String request = fileUtils.readSourceFile("users/%s".formatted(fileName));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                         .post(URL)
@@ -319,36 +324,23 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andReturn();
 
+
         Exception resolvedException = mvcResult.getResolvedException();
         Assertions.assertThat(resolvedException).isNotNull();
-        var firstNameError = "The field 'firstName' is required";
-        var lastNameError = "The field 'lastName' is required";
-        var emailError = "The field 'email' is required";
-
-        Assertions.assertThat(resolvedException.getMessage()).contains(firstNameError, lastNameError, emailError);
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
     }
 
-    @Test
-    @Order(20)
-    @DisplayName("POST v1/users returns bad request when fields are blank")
-    void save_returnsBadRequest_WhenFieldsAreBlank() throws Exception {
-        String request = fileUtils.readSourceFile("users/post-request-user-blank-fields-400.json");
-
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                        .post(URL)
-                        .content(request)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andReturn();
-
-        Exception resolvedException = mvcResult.getResolvedException();
-        Assertions.assertThat(resolvedException).isNotNull();
-        var firstNameError = "The field 'firstName' is required";
-        var lastNameError = "The field 'lastName' is required";
-        var emailError = "The field 'email' is required";
-
-        Assertions.assertThat(resolvedException.getMessage()).contains(firstNameError, lastNameError, emailError);
+    private static Stream<Arguments> postUserBadRequestSource(){
+        var firstNameRequiredError = "The field 'firstName' is required";
+        var lastNameRequiredError = "The field 'lastName' is required";
+        var emailRequiredError = "The field 'email' is required";
+        var emailInvalidError = "Email is not valid";
+        var allRequiredErrors = List.of(firstNameRequiredError, lastNameRequiredError, emailRequiredError);
+        var emailError = Collections.singletonList(emailInvalidError);
+        return Stream.of(
+                Arguments.of("post-request-user-empty-fields-400.json", allRequiredErrors),
+                Arguments.of("post-request-user-blank-fields-400.json", allRequiredErrors),
+                Arguments.of("post-request-user-invalid-email-400.json", emailError)
+        );
     }
 }
