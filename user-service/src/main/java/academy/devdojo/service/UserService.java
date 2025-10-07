@@ -36,7 +36,7 @@ public class UserService {
 
     public void update(User userToUpdate) {
         User foundUser = findByIdOrElseThrowResponseStatusException(userToUpdate.getId());
-        repository.update(userToUpdate);
+        repository.update(foundUser);
     }
 
 }

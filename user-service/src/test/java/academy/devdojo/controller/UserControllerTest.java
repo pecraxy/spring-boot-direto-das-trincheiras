@@ -234,7 +234,7 @@ class UserControllerTest {
     @Test
     @Order(14)
     @DisplayName("POST v1/users creates an user")
-    void save_createsAUser_WhenSuccessful() throws Exception {
+    void save_createsAnUser_WhenSuccessful() throws Exception {
         String request = fileUtils.readSourceFile("users/post-request-user-200.json");
         String response = fileUtils.readSourceFile("users/post-response-user-201.json");
 
@@ -299,9 +299,6 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.status().reason("User not found"));]
-
+                .andExpect(MockMvcResultMatchers.status().reason("User not found"));
     }
-
-
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public class UserData {
     @Getter
-    private final List<User> userList = new ArrayList<>();
+    private final List<User> userList = new ArrayList<>(3);
 
     {
         User user1 = User.builder().id(1L).firstName("Marcelo").lastName("Sem dente").email("marcelosemdente@example.com").build();
