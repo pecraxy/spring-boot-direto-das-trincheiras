@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -311,8 +312,8 @@ class UserControllerTest {
     @ParameterizedTest
     @MethodSource("postUserBadRequestSource")
     @Order(19)
-    @DisplayName("POST v1/users returns bad request when fields are empty")
-    void save_returnsBadRequest_WhenFieldsAreEmpty(String fileName, List<String> errors) throws Exception {
+    @DisplayName("POST v1/users returns bad request when fields are empty or invalid")
+    void save_returnsBadRequest_WhenFieldsAreEmptyOrInvalid(String fileName, List<String> errors) throws Exception {
         String request = fileUtils.readSourceFile("users/%s".formatted(fileName));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
@@ -330,17 +331,67 @@ class UserControllerTest {
         Assertions.assertThat(resolvedException.getMessage()).contains(errors);
     }
 
+    @ParameterizedTest
+    @MethodSource("putUserBadRequestSource")
+    @Order(20)
+    @DisplayName("PUT v1/users returns bad request when fields are empty or invalid")
+    void update_returnsBadRequest_WhenFieldsAreEmptyOrInvalid(String fileName, List<String> errors) throws Exception {
+        String request = fileUtils.readSourceFile("users/%s".formatted(fileName));
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+
+        Exception resolvedException = mvcResult.getResolvedException();
+        Assertions.assertThat(resolvedException).isNotNull();
+        Assertions.assertThat(resolvedException.getMessage()).contains(errors);
+    }
+
     private static Stream<Arguments> postUserBadRequestSource(){
-        var firstNameRequiredError = "The field 'firstName' is required";
-        var lastNameRequiredError = "The field 'lastName' is required";
-        var emailRequiredError = "The field 'email' is required";
-        var emailInvalidError = "Email is not valid";
-        var allRequiredErrors = List.of(firstNameRequiredError, lastNameRequiredError, emailRequiredError);
-        var emailError = Collections.singletonList(emailInvalidError);
+        var allRequiredErrors = allRequiredErrors();
+        var invalidEmailErrors =  invalidEmailErrors();
         return Stream.of(
                 Arguments.of("post-request-user-empty-fields-400.json", allRequiredErrors),
                 Arguments.of("post-request-user-blank-fields-400.json", allRequiredErrors),
-                Arguments.of("post-request-user-invalid-email-400.json", emailError)
+                Arguments.of("post-request-user-invalid-email-400.json", invalidEmailErrors)
         );
     }
+
+    private static Stream<Arguments> putUserBadRequestSource(){
+        var allRequiredErrors = allRequiredErrors();
+        allRequiredErrors.add("The user id cannot be null");
+        var invalidEmailErrors = invalidEmailErrors();
+        var idMustBePositiveError = Collections.singletonList("The user id must be a positive number higher than one");
+        return Stream.of(
+                Arguments.of("put-request-user-empty-fields-400.json", allRequiredErrors),
+                Arguments.of("put-request-user-blank-fields-400.json", allRequiredErrors),
+                Arguments.of("put-request-user-invalid-email-400.json", invalidEmailErrors),
+                Arguments.of("put-request-user-id-negative-400.json", idMustBePositiveError)
+
+        );
+
+    }
+    private static List<String> allRequiredErrors(){
+        var firstNameRequiredError = "The field 'firstName' is required";
+        var lastNameRequiredError = "The field 'lastName' is required";
+        var emailRequiredError = "The field 'email' is required";
+        return new ArrayList<>(List.of(firstNameRequiredError, lastNameRequiredError, emailRequiredError));
+    }
+
+    private static List<String> invalidEmailErrors(){
+        var emailInvalidError = "Email is not valid";
+        return List.of(emailInvalidError);
+    }
+
+//    private static List<String>
+
+
+
+
 }
