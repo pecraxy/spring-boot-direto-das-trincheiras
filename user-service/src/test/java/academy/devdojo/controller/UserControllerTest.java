@@ -228,8 +228,8 @@ class UserControllerTest {
 
     @Test
     @Order(13)
-    @DisplayName("GET v1/users/99 throws ResponseStatusException 404 when user is not found")
-    void findById_throwsResponseStatusException_WhenAnimeIsNotFound() throws Exception {
+    @DisplayName("GET v1/users/99 throws NotFound 404 when user is not found")
+    void findById_throwsNotFound_WhenAnimeIsNotFound() throws Exception {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         Long expectedId = 99L;
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", expectedId))
@@ -272,8 +272,8 @@ class UserControllerTest {
 
     @Test
     @Order(16)
-    @DisplayName("DELETE v1/users/1 throws ResponseStatusException 404 when user is not found")
-    void delete_throwsResponseStatusException_whenUserIsNotFound() throws Exception {
+    @DisplayName("DELETE v1/users/1 throws NotFound 404 when user is not found")
+    void delete_throwsNotFound_whenUserIsNotFound() throws Exception {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         Long userIdToDelete = 99L;
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", userIdToDelete))
@@ -297,8 +297,8 @@ class UserControllerTest {
 
     @Test
     @Order(18)
-    @DisplayName("PUT v1/users throws ResponseStatusException 404 when user is not found")
-    void update_throwResponseStatusException() throws Exception {
+    @DisplayName("PUT v1/users throws NotFound 404 when user is not found")
+    void update_throwNotFound() throws Exception {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         String request = fileUtils.readSourceFile("users/put-request-user-404.json");
         mockMvc.perform(MockMvcRequestBuilders.put(URL)
