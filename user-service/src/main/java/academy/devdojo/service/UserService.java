@@ -1,6 +1,7 @@
 package academy.devdojo.service;
 
 import academy.devdojo.domain.User;
+import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.repository.UserHardCodedRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,8 @@ public class UserService {
         return repository.findAll();
     }
 
-    public User findByIdOrElseThrowResponseStatusException(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public User findByIdOrElseThrowNotFoundException(Long id) {
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     public User save(User user) {
@@ -30,12 +31,12 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        User userToDelete = this.findByIdOrElseThrowResponseStatusException(id);
+        User userToDelete = this.findByIdOrElseThrowNotFoundException(id);
         repository.delete(userToDelete);
     }
 
     public void update(User userToUpdate) {
-        User foundUser = findByIdOrElseThrowResponseStatusException(userToUpdate.getId());
+        User foundUser = findByIdOrElseThrowNotFoundException(userToUpdate.getId());
         repository.update(foundUser);
     }
 

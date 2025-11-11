@@ -162,7 +162,7 @@ class UserServiceTest {
         var expectedUser = userList.getFirst();
         var id = expectedUser.getId();
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(expectedUser));
-        User foundUser = service.findByIdOrElseThrowResponseStatusException(id);
+        User foundUser = service.findByIdOrElseThrowNotFoundException(id);
         Assertions.assertThat(foundUser)
                 .isNotNull()
                 .isEqualTo(expectedUser);
@@ -177,7 +177,7 @@ class UserServiceTest {
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.empty());
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.findByIdOrElseThrowResponseStatusException(id))
+                .isThrownBy(() -> service.findByIdOrElseThrowNotFoundException(id))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
