@@ -1,8 +1,6 @@
 package academy.devdojo.controller;
 
 import academy.devdojo.domain.Anime;
-import academy.devdojo.exception.DefaultErrorMessage;
-import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.mapper.AnimeMapper;
 import academy.devdojo.request.AnimePostRequest;
 import academy.devdojo.request.AnimePutRequest;
@@ -15,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -81,7 +78,6 @@ public class AnimeController {
 
         return ResponseEntity.noContent().build();
     }
-
 
 
 }

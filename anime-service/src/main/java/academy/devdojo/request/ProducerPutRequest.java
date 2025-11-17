@@ -12,7 +12,7 @@ import lombok.ToString;
 @Builder
 @ToString
 public class ProducerPutRequest {
-    @NotNull(message="The field 'id' cannot be null")
+    @NotNull(message = "The field 'id' cannot be null")
     private Long id;
     @NotBlank(message = "The field 'name' is required")
     private String name;
