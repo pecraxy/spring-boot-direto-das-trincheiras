@@ -1,0 +1,3 @@
+ENV_ROOT_PASSWORD=devdojo
+ENV_MYSQL_PASSWORD=academy
+ENV_MYSQL_USER=pecraxy
