@@ -7,3 +7,8 @@ services:
       MYSQL_PASSWORD: academy
     ports:
       - "3306:3306"
+    volumes:
+      - devdojo-db:/var/lib/mysql
+
+volumes:
+  devdojo-db:
