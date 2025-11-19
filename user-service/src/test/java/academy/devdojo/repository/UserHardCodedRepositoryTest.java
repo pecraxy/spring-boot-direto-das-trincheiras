@@ -49,12 +49,12 @@ class UserHardCodedRepositoryTest {
     }
 
     @Test
-    @DisplayName("findByName returns list with found object when both name are found")
+    @DisplayName("findByFirstName returns list with found object when name is found")
     @Order(2)
-    void findByName_ReturnsFoundUsersInList_WhenBothNamesFound() {
+    void findByFirstName_ReturnsFoundUsersInList_WhenFirstNameIsFound() {
         var expectedProducer = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        List<User> users = repository.findByName(expectedProducer.getFirstName(), expectedProducer.getLastName());
+        List<User> users = repository.findByFirstName(expectedProducer.getFirstName());
 
         Assertions.assertThat(users)
                 .isNotNull()
@@ -64,68 +64,11 @@ class UserHardCodedRepositoryTest {
     }
 
     @Test
-    @DisplayName("findByName returns list with found object when only lastName is null")
+    @DisplayName("findByFirstName returns empty list when name is null")
     @Order(3)
-    void findByName_ReturnsFoundUsersInList_WhenOnlyLastNameIsNull() {
-        var expectedProducer = userList.getFirst();
+    void findByFirstName_ReturnsEmptyList_WhenNameIsNull() {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        List<User> users = repository.findByName(null, expectedProducer.getLastName());
-
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isNotEmpty()
-                .contains(expectedProducer)
-                .hasSize(1);
-    }
-
-    @Test
-    @DisplayName("findByName returns list with found object when only firstName is null")
-    @Order(4)
-    void findByName_ReturnsFoundUsersInList_WhenOnlyFirstNameIsNull() {
-        var expectedProducer = userList.getFirst();
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        List<User> users = repository.findByName(expectedProducer.getFirstName(), null);
-
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isNotEmpty()
-                .contains(expectedProducer)
-                .hasSize(1);
-    }
-
-    @Test
-    @DisplayName("findByName returns empty list when both names are null")
-    @Order(5)
-    void findByName_ReturnsEmptyList_WhenBothNamesAreNull() {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        List<User> users = repository.findByName(null, null);
-
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isEmpty();
-    }
-
-    @Test
-    @DisplayName("findByEmail returns found object when email exists")
-    @Order(6)
-    void findByEmail_ReturnsUser_WhenEmailExists() {
-        var expectedProducer = userList.getFirst();
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        List<User> users = repository.findByEmail(expectedProducer.getEmail());
-
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isNotEmpty()
-                .contains(expectedProducer)
-                .hasSize(1);
-    }
-
-    @Test
-    @DisplayName("findByEmail returns empty list when email is not found ")
-    @Order(7)
-    void findByEmail_ReturnsEmptyList_WhenEmailIsNull() {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        List<User> users = repository.findByEmail(null);
+        List<User> users = repository.findByFirstName(null);
 
         Assertions.assertThat(users)
                 .isNotNull()
@@ -134,7 +77,7 @@ class UserHardCodedRepositoryTest {
 
     @Test
     @DisplayName("findById returns an User with given id")
-    @Order(8)
+    @Order(4)
     void findById_ReturnsUser_WhenSuccessful() {
         var expectedUser = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
@@ -148,7 +91,7 @@ class UserHardCodedRepositoryTest {
 
     @Test
     @DisplayName("save create an User")
-    @Order(9)
+    @Order(5)
     void save_CreateAnUser_WhenSuccessful() {
         var userToSave = userUtils.newUserToCreate();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
@@ -169,7 +112,7 @@ class UserHardCodedRepositoryTest {
 
     @Test
     @DisplayName("delete removes an user")
-    @Order(9)
+    @Order(6)
     void delete_removesAnUser_WhenSuccessful() {
         var userToDelete = userList.getFirst();
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
@@ -190,7 +133,7 @@ class UserHardCodedRepositoryTest {
 
     @Test
     @DisplayName("update update an user")
-    @Order(10)
+    @Order(7)
     void update_UpdateAnUser_WhenSuccessful() {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
         var userToUpdate = userList.getFirst();

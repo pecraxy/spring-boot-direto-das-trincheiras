@@ -23,11 +23,8 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public ResponseEntity<List<UserGetResponse>> findAll(
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String email) {
-        List<User> foundUsers = service.findAll(firstName, lastName, email);
+    public ResponseEntity<List<UserGetResponse>> findAll(@RequestParam(required = false) String firstName) {
+        List<User> foundUsers = service.findAll(firstName);
         List<UserGetResponse> response = userMapper.toUserGetResponseList(foundUsers);
         return ResponseEntity.ok(response);
     }

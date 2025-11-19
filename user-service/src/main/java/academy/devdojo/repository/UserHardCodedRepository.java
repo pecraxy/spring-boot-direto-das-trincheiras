@@ -16,15 +16,9 @@ public class UserHardCodedRepository {
         return userData.getUserList();
     }
 
-    public List<User> findByName(String firstName, String lastName) {
+    public List<User> findByFirstName(String firstName) {
         return userData.getUserList().stream()
-                .filter(user -> user.getFirstName().equalsIgnoreCase(firstName) || user.getLastName().equalsIgnoreCase(lastName))
-                .toList();
-    }
-
-    public List<User> findByEmail(String email) {
-        return userData.getUserList().stream()
-                .filter(user -> user.getEmail().equalsIgnoreCase(email))
+                .filter(user -> user.getFirstName().equalsIgnoreCase(firstName))
                 .toList();
     }
 

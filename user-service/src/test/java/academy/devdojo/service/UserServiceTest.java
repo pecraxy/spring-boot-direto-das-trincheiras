@@ -2,7 +2,6 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
-import academy.devdojo.repository.UserHardCodedRepository;
 import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -29,17 +28,13 @@ class UserServiceTest {
     UserUtils userUtils;
 
     @Mock
-    UserHardCodedRepository repository;
-
-    @Mock
-    UserRepository userRepository;
-
+    UserRepository repository;
 
 
     private List<User> userList;
 
     @BeforeEach
-    void init(){
+    void init() {
         userList = userUtils.newUserList();
     }
 
@@ -47,8 +42,8 @@ class UserServiceTest {
     @Order(1)
     @DisplayName("findAll returns all users when arguments are null")
     void findAll_returnsAllUsers_whenArgumentsAreNull() {
-        BDDMockito.when(userRepository.findAll()).thenReturn(userList);
-        var users = service.findAll(null, null, null);
+        BDDMockito.when(repository.findAll()).thenReturn(userList);
+        var users = service.findAll(null);
         Assertions.assertThat(users)
                 .isNotEmpty()
                 .isNotNull()
@@ -61,8 +56,8 @@ class UserServiceTest {
     @DisplayName("findAll returns a list with found user when firstName exists")
     void findAll_returnsFoundUser_whenFirstNameExists() {
         var expectedUser = userList.getFirst();
-        BDDMockito.when(repository.findByName(expectedUser.getFirstName(), null)).thenReturn(Collections.singletonList(expectedUser));
-        var users = service.findAll(expectedUser.getFirstName(), null, null);
+        BDDMockito.when(repository.findByFirstNameEqualsIgnoreCase(expectedUser.getFirstName())).thenReturn(Collections.singletonList(expectedUser));
+        var users = service.findAll(expectedUser.getFirstName());
         Assertions.assertThat(users)
                 .isNotNull()
                 .isNotEmpty()
@@ -75,8 +70,8 @@ class UserServiceTest {
     @DisplayName("findAll returns empty list when firstName is not found")
     void findAll_returnsEmptyList_whenFirstNameIsNotFound() {
         var firstName = "not-found";
-        BDDMockito.when(repository.findByName(firstName, null)).thenReturn(Collections.emptyList());
-        var users = service.findAll(firstName, null, null);
+        BDDMockito.when(repository.findByFirstNameEqualsIgnoreCase(firstName)).thenReturn(Collections.emptyList());
+        var users = service.findAll(firstName);
         Assertions.assertThat(users)
                 .isNotNull()
                 .isEmpty();
@@ -84,85 +79,6 @@ class UserServiceTest {
 
     @Test
     @Order(4)
-    @DisplayName("findAll returns a list with found user when lastName exists")
-    void findAll_returnsFoundUser_whenLastNameExists() {
-        var expectedUser = userList.getFirst();
-        BDDMockito.when(repository.findByName(null, expectedUser.getLastName())).thenReturn(Collections.singletonList(expectedUser));
-        var users = service.findAll(null, expectedUser.getLastName(), null);
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(1)
-                .contains(expectedUser);
-    }
-
-    @Test
-    @Order(5)
-    @DisplayName("findAll returns empty list when lastName is not found")
-    void findAll_returnsEmptyList_whenLastNameIsNotFound() {
-        var lastName = "not-found";
-        BDDMockito.when(repository.findByName(null, lastName)).thenReturn(Collections.emptyList());
-        var users = service.findAll(null, lastName, null);
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isEmpty();
-    }
-
-    @Test
-    @Order(6)
-    @DisplayName("findAll returns a list with found user when firstname and lastName exists")
-    void findAll_returnsFoundUser_whenFirstNameAndLastNameExists() {
-        var expectedUser = userList.getFirst();
-        BDDMockito.when(repository.findByName(expectedUser.getFirstName(), expectedUser.getLastName())).thenReturn(Collections.singletonList(expectedUser));
-        var users = service.findAll(expectedUser.getFirstName(), expectedUser.getLastName(), null);
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(1)
-                .contains(expectedUser);
-    }
-
-    @Test
-    @Order(7)
-    @DisplayName("findAll returns empty list when firstName and lastName are not found")
-    void findAll_returnsEmptyList_whenFirstNameAndLastNameAreNotFound() {
-        var firstName = "not-found";
-        var lastName = "not-found";
-        BDDMockito.when(repository.findByName(firstName, lastName)).thenReturn(Collections.emptyList());
-        var users = service.findAll(firstName, lastName, null);
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isEmpty();
-    }
-
-    @Test
-    @Order(8)
-    @DisplayName("findAll returns a list with found user when email exists")
-    void findAll_returnsFoundUser_whenEmailExists() {
-        var expectedUser = userList.getFirst();
-        BDDMockito.when(repository.findByEmail(expectedUser.getEmail())).thenReturn(Collections.singletonList(expectedUser));
-        var users = service.findAll(null, null, expectedUser.getEmail());
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(1)
-                .contains(expectedUser);
-    }
-
-    @Test
-    @Order(9)
-    @DisplayName("findAll returns empty list when email is not found")
-    void findAll_returnsEmptyList_whenEmailIsNotFound() {
-        var email = "notfound@notfound.com";
-        BDDMockito.when(repository.findByEmail(email)).thenReturn(Collections.emptyList());
-        var users = service.findAll(null, null, email);
-        Assertions.assertThat(users)
-                .isNotNull()
-                .isEmpty();
-    }
-
-    @Test
-    @Order(10)
     @DisplayName("findById returns user when successful")
     void findById_returnsUser_whenSuccessful() {
         var expectedUser = userList.getFirst();
@@ -175,7 +91,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(11)
+    @Order(5)
     @DisplayName("findById throws ResponseStatusException when user is not found")
     void findById_ThrowsResponseStatusException_WhenUserIsNotFound() {
         var expectedUser = userList.getFirst();
@@ -188,7 +104,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(12)
+    @Order(6)
     @DisplayName("save creates an user")
     void save_createsAnUser_WhenSuccessful() {
         var userToCreate = userUtils.newUserToCreate();
@@ -201,7 +117,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(13)
+    @Order(7)
     @DisplayName("delete removes an user")
     void delete_removesAnUser_WhenSuccessful() {
         var expectedUserToDelete = userList.getFirst();
@@ -213,7 +129,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(14)
+    @Order(8)
     @DisplayName("delete throws ResponseStatusException when user is not found")
     void delete_ThrowsResponseStatusException_WhenUserNotFound() {
         var expectedUserToDelete = userList.getFirst();
@@ -226,20 +142,21 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(15)
+    @Order(9)
     @DisplayName("update updates an User")
     void update_UpdateUser_WhenSuccessful() {
         var expectedUserToUpdate = userList.getFirst();
         BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(expectedUserToUpdate));
         expectedUserToUpdate.setFirstName("Sunny");
-        BDDMockito.doNothing().when(repository).update(expectedUserToUpdate);
+//        BDDMockito.doNothing().when(repository).update(expectedUserToUpdate);
+        BDDMockito.when(repository.save(expectedUserToUpdate)).thenReturn(expectedUserToUpdate);
         service.update(expectedUserToUpdate);
         Assertions.assertThatNoException()
                 .isThrownBy(() -> service.update(expectedUserToUpdate));
     }
 
     @Test
-    @Order(16)
+    @Order(10)
     @DisplayName("update throws ResponseStatusException when user is not found")
     void update_ThrowsResponseStatusException_WhenUserNotFound() {
         var expectedUserToUpdate = userList.getFirst();

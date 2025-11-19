@@ -4,7 +4,6 @@ import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import academy.devdojo.repository.UserData;
-import academy.devdojo.repository.UserHardCodedRepository;
 import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 
@@ -48,17 +47,14 @@ class UserControllerTest {
     private UserData userData;
 
     @MockitoBean
-    private UserRepository userRepository;
-
-    @MockitoSpyBean
-    private UserHardCodedRepository repository;
+    private UserRepository repository;
 
     private List<User> userList;
 
     private final String URL = "/v1/users";
 
     @BeforeEach
-    void init(){
+    void init() {
         userList = userUtils.newUserList();
     }
 
@@ -66,8 +62,7 @@ class UserControllerTest {
     @DisplayName("GET v1/users returns a list with all users when all arguments are null")
     @Order(1)
     void findAll_ReturnsAllUsers_WhenAllArgumentsAreNull() throws Exception {
-//        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        BDDMockito.when(userRepository.findAll()).thenReturn(userList);
+        BDDMockito.when(repository.findAll()).thenReturn(userList);
         var response = fileUtils.readSourceFile("users/get-users-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get(URL))
                 .andDo(MockMvcResultHandlers.print())
@@ -79,9 +74,10 @@ class UserControllerTest {
     @DisplayName("GET v1/users?firstName=Sunless returns a list with found user when firstName exists")
     @Order(2)
     void findAll_returnsFoundUser_whenFirstNameExists() throws Exception {
-        var firstName = userList.getFirst().getFirstName();
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        var firstName = "Sunless";
         var response = fileUtils.readSourceFile("users/get-users-firstName-sunless-200.json");
+        var sunless = userList.stream().filter(user -> user.getFirstName().equalsIgnoreCase(firstName)).findFirst().orElse(null);
+        BDDMockito.when(repository.findByFirstNameEqualsIgnoreCase(firstName)).thenReturn(Collections.singletonList(sunless));
         mockMvc.perform(MockMvcRequestBuilders.get(URL).param("firstName", firstName))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -103,127 +99,12 @@ class UserControllerTest {
 
     @Test
     @Order(4)
-    @DisplayName("GET v1/users?lastName=Shadow returns a list with found user when lastName exists")
-    void findAll_returnsFoundUser_whenLastNameExists() throws Exception{
-        String lastName = userList.getFirst().getLastName();
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        String response = fileUtils.readSourceFile("users/get-users-lastName-shadow-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.get(URL).param("lastName", lastName))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(5)
-    @DisplayName("GET v1/users?lastName=not-found returns empty list when lastName is not found")
-    void findAll_ReturnsEmptyList_WhenLastNameNotFound() throws Exception {
-        String lastName = "not-found";
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        String response = fileUtils.readSourceFile("users/get-users-lastName-notFound-x-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.get(URL).param("lastName", lastName))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(6)
-    @DisplayName("GET v1/users?firstName=Sunless&lastName=Shadow returns a list with found user when firstname and lastName exists")
-    void findAll_returnsFoundUser_whenFirstNameAndLastNameExists() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        User expectedUser = userList.getFirst();
-        String firstName = expectedUser.getFirstName();
-        String lastName = expectedUser.getLastName();
-        String response = fileUtils.readSourceFile("users/get-users-firstName-sunless-lastName-shadow-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.get(URL)
-                    .param("firstName", firstName).param("lastName", lastName))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(7)
-    @DisplayName("GET v1/users?firstName=not-found&lastName=not-found returns a empty list when firstName and lastName are not found")
-    void findAll_returnsEmptyList_whenFirstNameAndLastNameAreNotFound() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(Collections.emptyList());
-        String firstName = "not-found";
-        String lastName = "not-found";
-        String response = fileUtils.readSourceFile("users/get-users-firstName-notFound-lastName-notFound-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.get(URL)
-                        .param("firstName", firstName).param("lastName", lastName))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(8)
-    @DisplayName("GET v1/users?email=shadowslave@example.com returns found user when email exists")
-    void findAll_returnsFoundUser_whenEmailExists() throws Exception {
-        User expectedUser = userList.getFirst();
-        BDDMockito.when(userData.getUserList()).thenReturn(Collections.singletonList(expectedUser));
-        String email = expectedUser.getEmail();
-        String response = fileUtils.readSourceFile("users/get-users-email-shadowslave@example.com-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.get(URL).param("email", email))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(9)
-    @DisplayName("GET v1/users?email=not-found returns empty list when email is not found")
-    void findAll_returnsEmptyList_whenEmailIsNotFound() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        String notFound = "not-found";
-        String response = fileUtils.readSourceFile("users/get-users-email-notfound-200.json");
-        mockMvc.perform(MockMvcRequestBuilders.get(URL).param("email", notFound))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(10)
-    @DisplayName("GET v1/users?firstName=Sunless&lastName=Shadow&email=shadowslave@example.com returns foundUser when firstName, lastName and email exists")
-    void findAll_returnsFoundUser_WhenFirstNameLastNameAndEmailExists() throws Exception {
-        User expectedUser = userList.getFirst();
-        BDDMockito.when(userData.getUserList()).thenReturn(Collections.singletonList(expectedUser));
-        String response = fileUtils.readSourceFile("users/get-users-firstname-sunless-lastname-shadow-email-shadowslave@example.com-200.json");
-        String firstName = expectedUser.getFirstName();
-        String lastName = expectedUser.getLastName();
-        String email = expectedUser.getEmail();
-        mockMvc.perform(MockMvcRequestBuilders.get(URL)
-                        .param("firstName", firstName).param("lastName", lastName).param("email", email))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(11)
-    @DisplayName("GET v1/users?firstName=not-found&lastName=not-found&email=not-found returns empty list when firstName, lastName and email are not found")
-    void findAll_returnsEmptyList_WhenFirstNameLastNameAndEmailAreNotFound() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(Collections.emptyList());
-        String response = fileUtils.readSourceFile("users/get-users-firstName-notFound-lastName-notFound-200.json");
-        String firstName = "not-found";
-        String lastName = "not-found";
-        String email = "not-found";
-        mockMvc.perform(MockMvcRequestBuilders.get(URL)
-                        .param("firstName", firstName).param("lastName", lastName).param("email", email))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(12)
     @DisplayName("GET v1/users/1 returns user when successful")
     void findById_returnsUserWhenSuccessful() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        Long expectedId = userList.getFirst().getId();
+        Long expectedId = 1L;
+        var foundUser = userList.stream().filter(user -> user.getId().equals(expectedId)).findFirst();
+
+        BDDMockito.when(repository.findById(expectedId)).thenReturn(foundUser);
         String response = fileUtils.readSourceFile("users/get-users-by-id-1-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", expectedId))
                 .andDo(MockMvcResultHandlers.print())
@@ -232,10 +113,9 @@ class UserControllerTest {
     }
 
     @Test
-    @Order(13)
+    @Order(5)
     @DisplayName("GET v1/users/99 throws NotFound 404 when user is not found")
     void findById_throwsNotFound_WhenAnimeIsNotFound() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
         var response = fileUtils.readSourceFile("users/get-users-by-id-99-404.json");
         Long expectedId = 99L;
         mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", expectedId))
@@ -245,7 +125,7 @@ class UserControllerTest {
     }
 
     @Test
-    @Order(14)
+    @Order(6)
     @DisplayName("POST v1/users creates an user")
     void save_createsAnUser_WhenSuccessful() throws Exception {
         String request = fileUtils.readSourceFile("users/post-request-user-200.json");
@@ -266,18 +146,19 @@ class UserControllerTest {
     }
 
     @Test
-    @Order(15)
+    @Order(7)
     @DisplayName("DELETE v1/users/1 deletes an user when user exists")
     void delete_deletesAnUser_whenUserExists() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
-        Long userIdToDelete = userList.getFirst().getId();
-        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", userIdToDelete))
+        Long id = userList.getFirst().getId();
+        var foundUser = userList.stream().filter(user -> user.getId().equals(id)).findFirst();
+        BDDMockito.when(repository.findById(id)).thenReturn(foundUser);
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", id))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
-    @Order(16)
+    @Order(8)
     @DisplayName("DELETE v1/users/1 throws NotFound 404 when user is not found")
     void delete_throwsNotFound_whenUserIsNotFound() throws Exception {
         BDDMockito.when(userData.getUserList()).thenReturn(userList);
@@ -290,10 +171,12 @@ class UserControllerTest {
     }
 
     @Test
-    @Order(17)
+    @Order(9)
     @DisplayName("PUT v1/users updates an User")
     void update_updatesAnUser_WhenSuccessful() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        Long id = 1L;
+        var foundUser = userList.stream().filter(user -> user.getId().equals(id)).findFirst();
+        BDDMockito.when(repository.findById(id)).thenReturn(foundUser);
         String request = fileUtils.readSourceFile("users/put-request-user-200.json");
         mockMvc.perform(MockMvcRequestBuilders.put(URL)
                         .content(request)
@@ -303,10 +186,10 @@ class UserControllerTest {
     }
 
     @Test
-    @Order(18)
+    @Order(10)
     @DisplayName("PUT v1/users throws NotFound 404 when user is not found")
     void update_throwNotFound() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+
         String request = fileUtils.readSourceFile("users/put-request-user-404.json");
         var response = fileUtils.readSourceFile("users/put-user-by-id-99-404.json");
         mockMvc.perform(MockMvcRequestBuilders.put(URL)
@@ -319,7 +202,7 @@ class UserControllerTest {
 
     @ParameterizedTest
     @MethodSource("postUserBadRequestSource")
-    @Order(19)
+    @Order(11)
     @DisplayName("POST v1/users returns bad request when fields are empty or invalid")
     void save_returnsBadRequest_WhenFieldsAreEmptyOrInvalid(String fileName, List<String> errors) throws Exception {
         String request = fileUtils.readSourceFile("users/%s".formatted(fileName));
@@ -341,7 +224,7 @@ class UserControllerTest {
 
     @ParameterizedTest
     @MethodSource("putUserBadRequestSource")
-    @Order(20)
+    @Order(12)
     @DisplayName("PUT v1/users returns bad request when fields are empty or invalid")
     void update_returnsBadRequest_WhenFieldsAreEmptyOrInvalid(String fileName, List<String> errors) throws Exception {
         String request = fileUtils.readSourceFile("users/%s".formatted(fileName));
@@ -361,9 +244,9 @@ class UserControllerTest {
         Assertions.assertThat(resolvedException.getMessage()).contains(errors);
     }
 
-    private static Stream<Arguments> postUserBadRequestSource(){
+    private static Stream<Arguments> postUserBadRequestSource() {
         var allRequiredErrors = allRequiredErrors();
-        var invalidEmailErrors =  invalidEmailErrors();
+        var invalidEmailErrors = invalidEmailErrors();
         return Stream.of(
                 Arguments.of("post-request-user-empty-fields-400.json", allRequiredErrors),
                 Arguments.of("post-request-user-blank-fields-400.json", allRequiredErrors),
@@ -371,7 +254,7 @@ class UserControllerTest {
         );
     }
 
-    private static Stream<Arguments> putUserBadRequestSource(){
+    private static Stream<Arguments> putUserBadRequestSource() {
         var allRequiredErrors = allRequiredErrors();
         allRequiredErrors.add("The user id cannot be null");
         var invalidEmailErrors = invalidEmailErrors();
@@ -385,21 +268,20 @@ class UserControllerTest {
         );
 
     }
-    private static List<String> allRequiredErrors(){
+
+    private static List<String> allRequiredErrors() {
         var firstNameRequiredError = "The field 'firstName' is required";
         var lastNameRequiredError = "The field 'lastName' is required";
         var emailRequiredError = "The field 'email' is required";
         return new ArrayList<>(List.of(firstNameRequiredError, lastNameRequiredError, emailRequiredError));
     }
 
-    private static List<String> invalidEmailErrors(){
+    private static List<String> invalidEmailErrors() {
         var emailInvalidError = "Email is not valid";
         return List.of(emailInvalidError);
     }
 
 //    private static List<String> idErrors
-
-
 
 
 }

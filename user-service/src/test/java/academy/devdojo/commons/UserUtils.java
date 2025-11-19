@@ -15,7 +15,7 @@ public class UserUtils {
         return new ArrayList<>(List.of(user1, user2, user3));
     }
 
-    public User newUserToCreate(){
+    public User newUserToCreate() {
         return User.builder().id(99L).firstName("Weaver").lastName("Daemon").email("weaverdaemon@example.com").build();
     }
 }
