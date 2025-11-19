@@ -2,7 +2,6 @@ package academy.devdojo.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.context.annotation.Primary;
 
 @Entity
 @Data

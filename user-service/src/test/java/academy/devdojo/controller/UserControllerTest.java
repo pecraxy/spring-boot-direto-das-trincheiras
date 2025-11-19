@@ -5,6 +5,7 @@ import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import academy.devdojo.repository.UserData;
 import academy.devdojo.repository.UserHardCodedRepository;
+import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,6 +47,9 @@ class UserControllerTest {
     @MockitoBean
     private UserData userData;
 
+    @MockitoBean
+    private UserRepository userRepository;
+
     @MockitoSpyBean
     private UserHardCodedRepository repository;
 
@@ -62,7 +66,8 @@ class UserControllerTest {
     @DisplayName("GET v1/users returns a list with all users when all arguments are null")
     @Order(1)
     void findAll_ReturnsAllUsers_WhenAllArgumentsAreNull() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+//        BDDMockito.when(userData.getUserList()).thenReturn(userList);
+        BDDMockito.when(userRepository.findAll()).thenReturn(userList);
         var response = fileUtils.readSourceFile("users/get-users-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get(URL))
                 .andDo(MockMvcResultHandlers.print())

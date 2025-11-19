@@ -3,6 +3,7 @@ package academy.devdojo.service;
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import academy.devdojo.repository.UserHardCodedRepository;
+import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,11 @@ class UserServiceTest {
     @Mock
     UserHardCodedRepository repository;
 
+    @Mock
+    UserRepository userRepository;
+
+
+
     private List<User> userList;
 
     @BeforeEach
@@ -41,7 +47,7 @@ class UserServiceTest {
     @Order(1)
     @DisplayName("findAll returns all users when arguments are null")
     void findAll_returnsAllUsers_whenArgumentsAreNull() {
-        BDDMockito.when(repository.findAll()).thenReturn(userList);
+        BDDMockito.when(userRepository.findAll()).thenReturn(userList);
         var users = service.findAll(null, null, null);
         Assertions.assertThat(users)
                 .isNotEmpty()

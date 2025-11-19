@@ -3,6 +3,7 @@ package academy.devdojo.service;
 import academy.devdojo.domain.User;
 import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.repository.UserHardCodedRepository;
+import academy.devdojo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     public final UserHardCodedRepository repository;
+    private final UserRepository userRepository;
 
     public List<User> findAll(@Nullable String firstName, @Nullable String lastName, @Nullable String email) {
         if (firstName != null || lastName != null) return repository.findByName(firstName, lastName);
         if (email != null) return repository.findByEmail(email);
-        return repository.findAll();
+        return userRepository.findAll();
     }
 
     public User findByIdOrElseThrowNotFoundException(Long id) {
