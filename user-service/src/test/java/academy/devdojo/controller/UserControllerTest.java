@@ -3,7 +3,6 @@ package academy.devdojo.controller;
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
-import academy.devdojo.repository.UserData;
 import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -26,7 +25,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 
@@ -42,9 +40,6 @@ class UserControllerTest {
 
     @Autowired
     private FileUtils fileUtils;
-
-    @MockitoBean
-    private UserData userData;
 
     @MockitoBean
     private UserRepository repository;
@@ -89,7 +84,6 @@ class UserControllerTest {
     @DisplayName("GET v1/users?firstName=not-found returns empty list when firstName is not found")
     void findAll_returnsEmptyList_whenFirstNameIsNotFound() throws Exception {
         var firstName = "not-found";
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
         var response = fileUtils.readSourceFile("users/get-users-firstName-notFound-x-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get(URL).param("firstName", firstName))
                 .andDo(MockMvcResultHandlers.print())
@@ -161,7 +155,6 @@ class UserControllerTest {
     @Order(8)
     @DisplayName("DELETE v1/users/1 throws NotFound 404 when user is not found")
     void delete_throwsNotFound_whenUserIsNotFound() throws Exception {
-        BDDMockito.when(userData.getUserList()).thenReturn(userList);
         Long userIdToDelete = 99L;
         var response = fileUtils.readSourceFile("users/delete-user-by-id-99-404.json");
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + "/{id}", userIdToDelete))
