@@ -20,4 +20,10 @@ public class GlobalErrorHandlerAdvice {
         DefaultErrorMessage error = new DefaultErrorMessage(HttpStatus.BAD_REQUEST.value(), "Duplicated entry for one of the unique fields.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<DefaultErrorMessage> handleEmailAlreadyExistsException (EmailAlreadyExistsException e){
+        DefaultErrorMessage error = new DefaultErrorMessage(HttpStatus.BAD_REQUEST.value(), e.getReason());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }
