@@ -1,6 +1,7 @@
 package academy.devdojo.service;
 
 import academy.devdojo.domain.User;
+import academy.devdojo.exception.EmailAlreadyExistsException;
 import academy.devdojo.exception.NotFoundException;
 import academy.devdojo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,16 +47,16 @@ public class UserService {
 
     public void assertEmailDoesNotExists(String email) {
         repository.findByEmail(email)
-                .ifPresent(this::throwEmailDoesNotExist);
+                .ifPresent(this::throwEmailAlreadyExistsException);
     }
 
     public void assertEmailDoesNotExists(String email, Long id) {
         repository.findByEmailAndIdNot(email, id)
-                .ifPresent(this::throwEmailDoesNotExist);
+                .ifPresent(this::throwEmailAlreadyExistsException);
     }
 
-    private void throwEmailDoesNotExist(User user) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email %s already exists".formatted(user.getEmail()));
+    private void throwEmailAlreadyExistsException(User user) {
+        throw new EmailAlreadyExistsException("Email %s already exists".formatted(user.getEmail()));
     }
 
 }

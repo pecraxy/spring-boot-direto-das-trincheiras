@@ -3,6 +3,7 @@ package academy.devdojo.controller;
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
+import academy.devdojo.exception.EmailAlreadyExistsException;
 import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -141,6 +142,24 @@ class UserControllerTest {
 
     @Test
     @Order(7)
+    @DisplayName("POST v1/users throws EmailAlreadyExistsException when email is already used")
+    void save_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyUsed() throws Exception {
+        String request = fileUtils.readSourceFile("users/post-request-user-email-already-exists-400.json");
+        String response = fileUtils.readSourceFile("users/post-response-user-email-already-exists-400.json");
+        String emailAlreadyUsed = userUtils.newUserToCreateWithEmailAlreadyUsed().getEmail();
+        BDDMockito.when(repository.save(ArgumentMatchers.any())).thenThrow(new EmailAlreadyExistsException("Email %s already exists".formatted(emailAlreadyUsed)));
+        mockMvc.perform(MockMvcRequestBuilders
+                    .post(URL)
+                    .content(request)
+                    .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @Order(7)
     @DisplayName("DELETE v1/users/1 deletes an user when user exists")
     void delete_deletesAnUser_whenUserExists() throws Exception {
         Long id = userList.getFirst().getId();
@@ -176,6 +195,27 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("PUT v1/users throws EmailAlreadyExistsException when e-mail is already used")
+    void update_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyUsed() throws Exception {
+        Long id = 1L;
+        String emailAlreadyUsed = userList.getLast().getEmail();
+        var foundUser = userList.stream().filter(user -> user.getId().equals(id)).findFirst();
+        BDDMockito.when(repository.findById(id)).thenReturn(foundUser);
+        BDDMockito.when(repository.save(ArgumentMatchers.any())).thenThrow(new EmailAlreadyExistsException("Email %s already exists".formatted(emailAlreadyUsed)));
+        String request = fileUtils.readSourceFile("users/put-request-user-email-already-exists-400.json");
+        String response = fileUtils.readSourceFile("users/put-response-user-email-already-exists-400.json");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     @Test
