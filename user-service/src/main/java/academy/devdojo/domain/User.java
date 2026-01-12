@@ -3,6 +3,7 @@ package academy.devdojo.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+@With
 @Entity
 @Data
 @Builder
