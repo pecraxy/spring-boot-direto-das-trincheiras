@@ -3,8 +3,7 @@ package academy.devdojo.controller;
 import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.domain.Anime;
-import academy.devdojo.repository.AnimeData;
-import academy.devdojo.repository.AnimeHardCodedRepository;
+import academy.devdojo.repository.AnimeRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,7 +25,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -42,7 +40,7 @@ class AnimeControllerTest {
     private MockMvc mockMvc;
 
     @MockitoSpyBean
-    private AnimeHardCodedRepository repository;
+    private AnimeRepository repository;
 
     @MockitoBean
     private AnimeData animeData;

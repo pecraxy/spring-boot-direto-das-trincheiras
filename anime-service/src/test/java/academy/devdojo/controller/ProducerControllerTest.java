@@ -3,8 +3,7 @@ package academy.devdojo.controller;
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
-import academy.devdojo.repository.ProducerData;
-import academy.devdojo.repository.ProducerHardCodedRepository;
+import academy.devdojo.repository.ProducerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,7 +42,7 @@ class ProducerControllerTest {
     private ProducerData producerData;
 
     @MockitoSpyBean
-    private ProducerHardCodedRepository repository;
+    private ProducerRepository repository;
 
     @Autowired
     private FileUtils fileUtils;

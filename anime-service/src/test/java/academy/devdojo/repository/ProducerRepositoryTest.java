@@ -17,9 +17,9 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Log4j2
-class ProducerHardCodedRepositoryTest {
+class ProducerRepositoryTest {
     @InjectMocks
-    private ProducerHardCodedRepository repository;
+    private ProducerRepository repository;
     @Mock
     private ProducerData producerData;
 

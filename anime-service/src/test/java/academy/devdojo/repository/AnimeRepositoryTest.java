@@ -14,9 +14,9 @@ import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AnimeHardCodedRepositoryTest {
+class AnimeRepositoryTest {
     @InjectMocks
-    private AnimeHardCodedRepository repository;
+    private AnimeRepository repository;
     @Mock
     private AnimeData animeData;
 
