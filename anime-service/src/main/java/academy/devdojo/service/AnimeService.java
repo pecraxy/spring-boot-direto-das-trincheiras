@@ -2,6 +2,7 @@ package academy.devdojo.service;
 
 import academy.devdojo.domain.Anime;
 import academy.devdojo.exception.NotFoundException;
+import academy.devdojo.exception.ObjectAlreadyExistsException;
 import academy.devdojo.repository.AnimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class AnimeService {
     }
 
     public Anime save(Anime anime) {
+        assertAnimeNameDoesNotExists(anime.getName());
         return repository.save(anime);
     }
 
@@ -33,11 +35,24 @@ public class AnimeService {
 
     public void update(Anime animeToUpdate) {
         assertAnimeExists(animeToUpdate.getId());
+        assertAnimeNameDoesNotExists(animeToUpdate.getName(), animeToUpdate.getId());
         repository.save(animeToUpdate);
     }
 
     public void assertAnimeExists(Long id) {
         repository.findById(id).orElseThrow(() -> new NotFoundException("Anime not found"));
+    }
+
+    public void assertAnimeNameDoesNotExists(String name){
+        repository.findByNameIgnoreCase(name).ifPresent(this::throwAnimeAlreadyExists);
+    }
+
+    public void assertAnimeNameDoesNotExists(String name, Long id){
+        repository.findByNameAndIdNot(name, id).ifPresent(this::throwAnimeAlreadyExists);
+    }
+
+    private void throwAnimeAlreadyExists(Anime anime) {
+        throw new ObjectAlreadyExistsException("Anime '%s' already exists".formatted(anime.getName()));
     }
 
 }

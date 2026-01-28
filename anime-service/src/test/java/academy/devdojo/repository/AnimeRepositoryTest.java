@@ -17,8 +17,6 @@ import java.util.List;
 class AnimeRepositoryTest {
     @InjectMocks
     private AnimeRepository repository;
-    @Mock
-    private AnimeData animeData;
 
     @InjectMocks
     private AnimeUtils animeUtils;
@@ -28,7 +26,7 @@ class AnimeRepositoryTest {
     @BeforeEach
     void init() {
         animeList = animeUtils.newAnimeList();
-        BDDMockito.when(animeData.getAnimeList()).thenReturn(animeList);
+        BDDMockito.when(repository.findAll()).thenReturn(animeList);
     }
 
     @Test

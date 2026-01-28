@@ -2,6 +2,7 @@ package academy.devdojo.service;
 
 import academy.devdojo.domain.Producer;
 import academy.devdojo.exception.NotFoundException;
+import academy.devdojo.exception.ObjectAlreadyExistsException;
 import academy.devdojo.repository.ProducerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class ProducerService {
     }
 
     public Producer save(Producer producer) {
+        assertProducerNameDoesNotExists(producer.getName());
         return repository.save(producer);
     }
 
@@ -32,13 +34,28 @@ public class ProducerService {
     }
 
     public void update(Producer producerToUpdate) {
-        Producer producer = findByIdOrThrowNotFound(producerToUpdate.getId());
-        producerToUpdate.setCreatedAt(producer.getCreatedAt());
+        assertProducerExists(producerToUpdate.getId());
+        var createdAt = this.findByIdOrThrowNotFound(producerToUpdate.getId()).getCreatedAt();
+        producerToUpdate.setCreatedAt(createdAt);
+        assertProducerNameDoesNotExists(producerToUpdate.getName(), producerToUpdate.getId());
         repository.save(producerToUpdate);
     }
 
+
     public void assertProducerExists(Long id) {
-        repos
+        repository.findById(id).orElseThrow(() -> new NotFoundException("Producer not found"));
+    }
+
+    public void assertProducerNameDoesNotExists(String name){
+        repository.findByName(name).ifPresent(this::throwProducerAlreadyExists);
+    }
+
+    public void assertProducerNameDoesNotExists(String name, Long id){
+        repository.findByNameAndIdNot(name, id).ifPresent(this::throwProducerAlreadyExists);
+    }
+
+    private void throwProducerAlreadyExists(Producer producer){
+        throw new ObjectAlreadyExistsException("Producer '%s' already exists".formatted(producer.getName()));
     }
 
 }

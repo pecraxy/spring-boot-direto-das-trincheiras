@@ -28,4 +28,10 @@ public class GlobalErrorHandlerAdvice {
         DefaultErrorMessage error = new DefaultErrorMessage(HttpStatus.BAD_REQUEST.value(), e.getReason());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(ObjectAlreadyExistsException.class)
+    public ResponseEntity<DefaultErrorMessage> handleObjectAlreadyExistsException (ObjectAlreadyExistsException e){
+        DefaultErrorMessage error = new DefaultErrorMessage(HttpStatus.BAD_REQUEST.value(), e.getReason());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }
