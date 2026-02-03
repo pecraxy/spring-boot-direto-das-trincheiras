@@ -2,6 +2,7 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
+
 import academy.devdojo.repository.ProducerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +57,7 @@ class ProducerServiceTest {
 
         List<Producer> expectedProducersFound = Collections.singletonList(producer);
 
-        BDDMockito.when(repository.findByName(producer.getName()))
+        BDDMockito.when(repository.findByNameEqualsIgnoreCase(producer.getName()))
                 .thenReturn(expectedProducersFound);
 
         List<Producer> producersFound = service.findAll(producer.getName());
@@ -71,7 +73,7 @@ class ProducerServiceTest {
     @Order(3)
     void findAll_ReturnsEmptyList_WhenNameIsNotFound() {
         var name = "not-found";
-        BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
+        BDDMockito.when(repository.findByNameEqualsIgnoreCase(name)).thenReturn(Collections.emptyList());
         List<Producer> foundProducers = service.findAll(name);
         Assertions.assertThat(foundProducers)
                 .isNotNull()
@@ -79,12 +81,14 @@ class ProducerServiceTest {
     }
 
     @Test
-    @DisplayName("findById returns a producer with given id when succesful")
+    @DisplayName("findById returns a producer with given id when successful")
     @Order(4)
     void findById_ReturnsProducerById_WhenSuccessful() {
         var expectedProducer = producerList.getFirst();
+
         BDDMockito.when(repository.findById(expectedProducer.getId())).thenReturn(Optional.of(expectedProducer));
         Producer foundProducer = service.findByIdOrThrowNotFound(expectedProducer.getId());
+
         Assertions.assertThat(foundProducer)
                 .isEqualTo(expectedProducer)
                 .isNotNull();
@@ -109,6 +113,7 @@ class ProducerServiceTest {
     void save_CreatesAProducer_WhenSuccessful() {
         var producerToSave = producerUtils.newProducerToSave();
 
+        BDDMockito.when(repository.findByNameIgnoreCase(producerToSave.getName())).thenReturn(Optional.empty());
         BDDMockito.when(repository.save(producerToSave)).thenReturn(producerToSave);
 
         Producer savedProducer = service.save(producerToSave);
@@ -141,8 +146,6 @@ class ProducerServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> service.delete(expectedProducerToDelete.getId()))
                 .isInstanceOf(ResponseStatusException.class);
-
-
     }
 
     @Order(9)
@@ -155,7 +158,7 @@ class ProducerServiceTest {
 
         producerToUpdate.setName("Aniplex");
 
-        BDDMockito.doNothing().when(repository).update(producerToUpdate);
+        BDDMockito.doNothing().when(repository).save(producerToUpdate);
 
         Assertions.assertThatNoException().isThrownBy(() -> service.update(producerToUpdate));
     }

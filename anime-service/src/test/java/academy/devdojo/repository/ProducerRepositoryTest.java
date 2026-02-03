@@ -60,9 +60,9 @@ class ProducerRepositoryTest {
     @Order(3)
     @Test
     @DisplayName("findByName returns empty list when name is null")
-    void findByName_ReturnsEmptyList_WhenNameIsNull() {
+    void findByName_ReturnsEmptyList_WhenNameIgnoreCaseIsNull() {
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
-        var producers = repository.findByName(null);
+        var producers = repository.findByNameIgnoreCase(null);
         Assertions.assertThat(producers)
                 .isNotNull()
                 .isEmpty();
@@ -71,10 +71,10 @@ class ProducerRepositoryTest {
     @Order(4)
     @Test
     @DisplayName("findByName returns list with found object when name exists")
-    void findByName_ReturnsFoundProducerInList_WhenNameIsFound() {
+    void findByName_ReturnsFoundProducerInList_WhenNameIgnoreCaseIsFound() {
         BDDMockito.when(producerData.getProducers()).thenReturn(producerList);
         var expectedProducer = producerList.getFirst();
-        var producers = repository.findByName("Ufotable");
+        var producers = repository.findByNameIgnoreCase("Ufotable");
         Assertions.assertThat(producers)
                 .isNotNull()
                 .hasSize(1)

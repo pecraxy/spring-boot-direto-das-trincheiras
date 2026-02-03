@@ -2,7 +2,9 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.domain.Anime;
+import academy.devdojo.exception.ObjectAlreadyExistsException;
 import academy.devdojo.repository.AnimeRepository;
+import lombok.With;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,7 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+
 class AnimeServiceTest {
     @InjectMocks
     private AnimeService service;
@@ -55,7 +58,7 @@ class AnimeServiceTest {
 
         List<Anime> expectedAnimesFound = Collections.singletonList(anime);
 
-        BDDMockito.when(repository.findByName(anime.getName()))
+        BDDMockito.when(repository.findByNameEqualsIgnoreCase(anime.getName()))
                 .thenReturn(expectedAnimesFound);
 
         List<Anime> animesFound = service.findAll(anime.getName());
@@ -71,7 +74,7 @@ class AnimeServiceTest {
     @Order(3)
     void findAll_ReturnsEmptyList_WhenNameIsNotFound() {
         var name = "not-found";
-        BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
+        BDDMockito.when(repository.findByNameEqualsIgnoreCase(name)).thenReturn(Collections.emptyList());
         List<Anime> foundAnimes = service.findAll(name);
         Assertions.assertThat(foundAnimes)
                 .isNotNull()
@@ -106,7 +109,7 @@ class AnimeServiceTest {
     @Order(6)
     @Test
     @DisplayName("save creates a anime")
-    void save_CreatesAAnime_WhenSuccesful() {
+    void save_CreatesAnAnime_WhenSuccessful() {
         var animeToSave = animeUtils.newAnimeToSave();
 
         BDDMockito.when(repository.save(animeToSave)).thenReturn(animeToSave);
@@ -119,7 +122,7 @@ class AnimeServiceTest {
     @Order(7)
     @Test
     @DisplayName("delete deletes a anime")
-    void delete_DeletesAAnime_WhenSuccesful() {
+    void delete_DeletesAnAnime_WhenSuccessful() {
         var expectedAnimeToDelete = animeList.getFirst();
 
         BDDMockito.when(repository.findById(expectedAnimeToDelete.getId())).thenReturn(Optional.of(expectedAnimeToDelete));
@@ -141,21 +144,18 @@ class AnimeServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> service.delete(expectedAnimeToDelete.getId()))
                 .isInstanceOf(ResponseStatusException.class);
-
-
     }
 
     @Order(9)
     @Test
-    @DisplayName("update update an anime")
-    void update_UpdateAnime_WhenSuccesfull() {
-        var animeToUpdate = animeList.getFirst();
+    @DisplayName("update an anime")
+    void update_UpdateAnAnime_WhenSuccessful() {
+        var animeToUpdate = animeList.getFirst().withName("One Piece");
+        var animeName = animeToUpdate.getName();
+        var animeId = animeToUpdate.getId();
 
-        animeToUpdate.setName("Berserk 2");
-
-        BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(animeToUpdate));
-
-        BDDMockito.doNothing().when(repository).update(animeToUpdate);
+        BDDMockito.when(repository.findById(animeId)).thenReturn(Optional.of(animeToUpdate));
+        BDDMockito.when(repository.findByNameAndIdNot(animeName, animeId)).thenReturn(Optional.empty());
 
         Assertions.assertThatNoException().isThrownBy(() -> service.update(animeToUpdate));
     }
@@ -171,5 +171,35 @@ class AnimeServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> service.update(animeToUpdate))
                 .isInstanceOf(ResponseStatusException.class);
+    }
+
+    @Order(11)
+    @Test
+    @DisplayName("save throws ObjectAlreadyExistsException when Anime Already Exists")
+    void save_ThrowsObjectAlreadyExistsException_whenAnimeAlreadyExists() {
+        var animeToSave = animeUtils.newAnimeToSave();
+
+        BDDMockito.when(repository.findByNameIgnoreCase(animeToSave.getName())).thenReturn(Optional.of(animeToSave));
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.save(animeToSave))
+                .isInstanceOf(ObjectAlreadyExistsException.class);
+    }
+
+    @Order(12)
+    @Test
+    @DisplayName("update throws ObjectAlreadyExistsException when anime already exists")
+    void update_ThrowsObjectAlreadyExistsException_WhenAnimeAlreadyExists() {
+        var existingAnime = animeList.getLast();
+        var animeToUpdate = animeList.getFirst().withName(existingAnime.getName());
+        var animeId = animeToUpdate.getId();
+        var animeName = animeToUpdate.getName();
+
+        BDDMockito.when(repository.findById(animeId)).thenReturn(Optional.of(animeToUpdate));
+        BDDMockito.when(repository.findByNameAndIdNot(animeName, animeId)).thenReturn(Optional.of(existingAnime));
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.update(animeToUpdate))
+                .isInstanceOf(ObjectAlreadyExistsException.class);
     }
 }

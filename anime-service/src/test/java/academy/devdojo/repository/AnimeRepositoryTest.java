@@ -7,7 +7,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -56,8 +55,8 @@ class AnimeRepositoryTest {
     @Test
     @DisplayName("findByName returns a empty list when name is null")
     @Order(3)
-    void findByName_ReturnEmptyList_WhenNameIsNull() {
-        var animes = repository.findByName(null);
+    void findByName_ReturnEmptyList_WhenNameEqualsIgnoreCaseIsNull() {
+        var animes = repository.findByNameEqualsIgnoreCase(null);
 
         Assertions.assertThat(animes)
                 .isNotNull()
@@ -67,10 +66,10 @@ class AnimeRepositoryTest {
     @Test
     @DisplayName("findByName returns a list with found object when object name exists")
     @Order(4)
-    void findByName_ReturnListWithFoundObject_WhenObjectNameExists() {
+    void findByName_ReturnListWithFoundObject_WhenObjectNameEqualsIgnoreCaseExists() {
         var expectedAnime = animeList.getFirst();
 
-        var foundAnimeList = repository.findByName(expectedAnime.getName());
+        var foundAnimeList = repository.findByNameEqualsIgnoreCase(expectedAnime.getName());
 
         Assertions.assertThat(foundAnimeList)
                 .isNotNull()
@@ -118,7 +117,7 @@ class AnimeRepositoryTest {
 
         animeToUpdate.setName("Saiki Kusuo");
 
-        repository.update(animeToUpdate);
+        repository.save(animeToUpdate);
 
         Assertions.assertThat(this.animeList)
                 .contains(animeToUpdate);

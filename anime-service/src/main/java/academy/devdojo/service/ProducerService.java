@@ -16,7 +16,7 @@ public class ProducerService {
     private final ProducerRepository repository;
 
     public List<Producer> findAll(String name) {
-        return name == null ? repository.findAll() : repository.findByNameIgnoreCaseContaining(name);
+        return name == null ? repository.findAll() : repository.findByNameEqualsIgnoreCase(name);
     }
 
     public Producer findByIdOrThrowNotFound(Long id) {
@@ -47,7 +47,7 @@ public class ProducerService {
     }
 
     public void assertProducerNameDoesNotExists(String name){
-        repository.findByName(name).ifPresent(this::throwProducerAlreadyExists);
+        repository.findByNameIgnoreCase(name).ifPresent(this::throwProducerAlreadyExists);
     }
 
     public void assertProducerNameDoesNotExists(String name, Long id){

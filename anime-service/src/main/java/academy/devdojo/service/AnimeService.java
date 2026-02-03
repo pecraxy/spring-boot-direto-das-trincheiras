@@ -16,7 +16,7 @@ public class AnimeService {
     private final AnimeRepository repository;
 
     public List<Anime> findAll(String name) {
-        return name == null ? repository.findAll() : repository.findByNameIgnoreCaseContaining(name);
+        return name == null ? repository.findAll() : repository.findByNameEqualsIgnoreCase(name);
     }
 
     public Anime findByIdOrThrowNotFound(Long id) {
