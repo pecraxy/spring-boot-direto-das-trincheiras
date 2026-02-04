@@ -10,7 +10,9 @@ import java.util.Optional;
 @Repository
 public interface AnimeRepository extends JpaRepository<Anime, Long> {
     List<Anime> findByNameEqualsIgnoreCase(String name);
+
     Optional<Anime> findByNameIgnoreCase(String name);
+
     Optional<Anime> findByNameAndIdNot(String name, Long id);
 
 }

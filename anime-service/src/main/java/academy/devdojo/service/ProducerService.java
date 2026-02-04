@@ -46,15 +46,15 @@ public class ProducerService {
         repository.findById(id).orElseThrow(() -> new NotFoundException("Producer not found"));
     }
 
-    public void assertProducerNameDoesNotExists(String name){
+    public void assertProducerNameDoesNotExists(String name) {
         repository.findByNameIgnoreCase(name).ifPresent(this::throwProducerAlreadyExists);
     }
 
-    public void assertProducerNameDoesNotExists(String name, Long id){
+    public void assertProducerNameDoesNotExists(String name, Long id) {
         repository.findByNameAndIdNot(name, id).ifPresent(this::throwProducerAlreadyExists);
     }
 
-    private void throwProducerAlreadyExists(Producer producer){
+    private void throwProducerAlreadyExists(Producer producer) {
         throw new ObjectAlreadyExistsException("Producer '%s' already exists".formatted(producer.getName()));
     }
 

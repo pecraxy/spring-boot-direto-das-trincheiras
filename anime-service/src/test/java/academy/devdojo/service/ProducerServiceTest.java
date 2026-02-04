@@ -2,7 +2,7 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
-
+import academy.devdojo.exception.ObjectAlreadyExistsException;
 import academy.devdojo.repository.ProducerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
-
 
 import java.util.Collections;
 import java.util.List;
@@ -152,13 +151,10 @@ class ProducerServiceTest {
     @Test
     @DisplayName("update update a producer")
     void update_UpdateProducer_WhenSuccessful() {
-        var producerToUpdate = producerList.getFirst();
+        var producerToUpdate = producerList.getFirst().withName("Aniplex");
 
         BDDMockito.when(repository.findById(producerToUpdate.getId())).thenReturn(Optional.of(producerToUpdate));
-
-        producerToUpdate.setName("Aniplex");
-
-        BDDMockito.doNothing().when(repository).save(producerToUpdate);
+        BDDMockito.when(repository.findByNameAndIdNot(producerToUpdate.getName(), producerToUpdate.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatNoException().isThrownBy(() -> service.update(producerToUpdate));
     }
@@ -174,5 +170,21 @@ class ProducerServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> service.update(producerToUpdate))
                 .isInstanceOf(ResponseStatusException.class);
+    }
+
+    @Order(11)
+    @Test
+    @DisplayName("update throws ObjectAlreadyExistsException when Producer Already Exists")
+    void update_ThrowsObjectAlreadyExistsExceptionWhenProducerAlreadyExists() {
+        var producer = producerList.getLast();
+        var alreadyUsedProducerName = producer.getName();
+        var producerToUpdate = producerList.getFirst().withName(alreadyUsedProducerName);
+
+        BDDMockito.when(repository.findById(producerToUpdate.getId())).thenReturn(Optional.of(producerToUpdate));
+        BDDMockito.when(repository.findByNameAndIdNot(producerToUpdate.getName(), producerToUpdate.getId())).thenReturn(Optional.of(producer));
+
+        Assertions.assertThatException()
+                .isThrownBy(() -> service.update(producerToUpdate))
+                .isInstanceOf(ObjectAlreadyExistsException.class);
     }
 }

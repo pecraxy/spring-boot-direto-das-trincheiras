@@ -43,11 +43,11 @@ public class AnimeService {
         repository.findById(id).orElseThrow(() -> new NotFoundException("Anime not found"));
     }
 
-    public void assertAnimeNameDoesNotExists(String name){
+    public void assertAnimeNameDoesNotExists(String name) {
         repository.findByNameIgnoreCase(name).ifPresent(this::throwAnimeAlreadyExists);
     }
 
-    public void assertAnimeNameDoesNotExists(String name, Long id){
+    public void assertAnimeNameDoesNotExists(String name, Long id) {
         repository.findByNameAndIdNot(name, id).ifPresent(this::throwAnimeAlreadyExists);
     }
 
