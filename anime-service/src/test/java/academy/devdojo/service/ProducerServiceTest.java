@@ -2,7 +2,6 @@ package academy.devdojo.service;
 
 import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
-import academy.devdojo.exception.ObjectAlreadyExistsException;
 import academy.devdojo.repository.ProducerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -56,7 +55,7 @@ class ProducerServiceTest {
 
         List<Producer> expectedProducersFound = Collections.singletonList(producer);
 
-        BDDMockito.when(repository.findByNameEqualsIgnoreCase(producer.getName()))
+        BDDMockito.when(repository.findByName(producer.getName()))
                 .thenReturn(expectedProducersFound);
 
         List<Producer> producersFound = service.findAll(producer.getName());
@@ -72,7 +71,7 @@ class ProducerServiceTest {
     @Order(3)
     void findAll_ReturnsEmptyList_WhenNameIsNotFound() {
         var name = "not-found";
-        BDDMockito.when(repository.findByNameEqualsIgnoreCase(name)).thenReturn(Collections.emptyList());
+        BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
         List<Producer> foundProducers = service.findAll(name);
         Assertions.assertThat(foundProducers)
                 .isNotNull()
@@ -112,7 +111,6 @@ class ProducerServiceTest {
     void save_CreatesAProducer_WhenSuccessful() {
         var producerToSave = producerUtils.newProducerToSave();
 
-        BDDMockito.when(repository.findByNameIgnoreCase(producerToSave.getName())).thenReturn(Optional.empty());
         BDDMockito.when(repository.save(producerToSave)).thenReturn(producerToSave);
 
         Producer savedProducer = service.save(producerToSave);
@@ -154,7 +152,6 @@ class ProducerServiceTest {
         var producerToUpdate = producerList.getFirst().withName("Aniplex");
 
         BDDMockito.when(repository.findById(producerToUpdate.getId())).thenReturn(Optional.of(producerToUpdate));
-        BDDMockito.when(repository.findByNameAndIdNot(producerToUpdate.getName(), producerToUpdate.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatNoException().isThrownBy(() -> service.update(producerToUpdate));
     }
@@ -170,21 +167,5 @@ class ProducerServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> service.update(producerToUpdate))
                 .isInstanceOf(ResponseStatusException.class);
-    }
-
-    @Order(11)
-    @Test
-    @DisplayName("update throws ObjectAlreadyExistsException when Producer Already Exists")
-    void update_ThrowsObjectAlreadyExistsExceptionWhenProducerAlreadyExists() {
-        var producer = producerList.getLast();
-        var alreadyUsedProducerName = producer.getName();
-        var producerToUpdate = producerList.getFirst().withName(alreadyUsedProducerName);
-
-        BDDMockito.when(repository.findById(producerToUpdate.getId())).thenReturn(Optional.of(producerToUpdate));
-        BDDMockito.when(repository.findByNameAndIdNot(producerToUpdate.getName(), producerToUpdate.getId())).thenReturn(Optional.of(producer));
-
-        Assertions.assertThatException()
-                .isThrownBy(() -> service.update(producerToUpdate))
-                .isInstanceOf(ObjectAlreadyExistsException.class);
     }
 }

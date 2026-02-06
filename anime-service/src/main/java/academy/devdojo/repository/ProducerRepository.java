@@ -9,10 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface ProducerRepository extends JpaRepository<Producer, Long> {
-    List<Producer> findByNameEqualsIgnoreCase(String name);
-
-    Optional<Producer> findByNameIgnoreCase(String name);
-
-    Optional<Producer> findByNameAndIdNot(String name, Long id);
+    List<Producer> findByName(String name);
 }
 

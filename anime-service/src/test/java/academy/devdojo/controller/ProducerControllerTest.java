@@ -84,7 +84,7 @@ class ProducerControllerTest {
         var producerName = "Ufotable";
         var producerFound = producerList.stream().filter((producer) -> producer.getName().equalsIgnoreCase(producerName)).findFirst().orElse(null);
 
-        BDDMockito.when(repository.findByNameEqualsIgnoreCase(producerName)).thenReturn(Collections.singletonList(producerFound));
+        BDDMockito.when(repository.findByName(producerName)).thenReturn(Collections.singletonList(producerFound));
 
         var response = fileUtils.readResourceFile("producer/get-producer-ufotable-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get(URL).param("name", producerName))
@@ -99,7 +99,7 @@ class ProducerControllerTest {
     void findAll_ReturnsEmptyList_WhenNameIsNotFound() throws Exception {
         var name = "x";
 
-        BDDMockito.when(repository.findByNameEqualsIgnoreCase(name)).thenReturn(Collections.emptyList());
+        BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
 
         var response = fileUtils.readResourceFile("producer/get-producer-x-200.json");
         mockMvc.perform(MockMvcRequestBuilders.get(URL).param("name", name))
@@ -164,10 +164,8 @@ class ProducerControllerTest {
     @DisplayName("PUT v1/producers update a producer")
     void update_UpdateProducer_WhenSuccessful() throws Exception {
         var producer = producerList.getFirst().withName("Studios Wit");
-        var name = producer.getName();
         var id = producer.getId();
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(producer));
-        BDDMockito.when(repository.findByNameAndIdNot(name, id)).thenReturn(Optional.empty());
         var request = fileUtils.readResourceFile("producer/put-request-producer-200.json");
         mockMvc.perform(MockMvcRequestBuilders
                         .put(URL)
@@ -257,29 +255,6 @@ class ProducerControllerTest {
         Exception resolvedException = mvcResult.getResolvedException();
         Assertions.assertThat(resolvedException).isNotNull();
         Assertions.assertThat(resolvedException.getMessage()).contains(errors);
-    }
-
-    @Order(13)
-    @Test
-    @DisplayName("PUT v1/producers returns BadRequest 400 when Producer Already Exists")
-    void update_ReturnsBadRequest_WhenProducerAlreadyExists() throws Exception {
-        var existingProducer = producerList.getLast();
-        var alreadyUsedName = producerList.getLast().getName();
-        var producer = producerList.getFirst().withName(alreadyUsedName);
-        var name = producer.getName();
-        var id = producer.getId();
-        BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(producer));
-        BDDMockito.when(repository.findByNameAndIdNot(name, id)).thenReturn(Optional.of(existingProducer));
-        var request = fileUtils.readResourceFile("producer/put-request-already-used-named-producer-400.json");
-        var response = fileUtils.readResourceFile("producer/put-response-already-used-named-producer-400.json");
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put(URL)
-                        .content(request)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
     private static List<String> allRequiredErrors() {
