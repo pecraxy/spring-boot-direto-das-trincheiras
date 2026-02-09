@@ -36,7 +36,7 @@ public class AnimeService {
     }
 
     public void assertAnimeExists(Long id) {
-        repository.findById(id).orElseThrow(() -> new NotFoundException("Anime not found"));
+        findByIdOrThrowNotFound(id);
     }
 
 }
