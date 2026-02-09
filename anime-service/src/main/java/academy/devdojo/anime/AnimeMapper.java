@@ -1,10 +1,6 @@
-package academy.devdojo.mapper;
+package academy.devdojo.anime;
 
 import academy.devdojo.domain.Anime;
-import academy.devdojo.request.AnimePostRequest;
-import academy.devdojo.request.AnimePutRequest;
-import academy.devdojo.response.AnimeGetResponse;
-import academy.devdojo.response.AnimePostResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

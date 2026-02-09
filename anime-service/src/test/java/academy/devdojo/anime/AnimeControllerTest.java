@@ -1,11 +1,8 @@
-package academy.devdojo.controller;
+package academy.devdojo.anime;
 
 import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.domain.Anime;
-import academy.devdojo.repository.AnimeRepository;
-import academy.devdojo.repository.ProducerRepository;
-import academy.devdojo.service.ProducerService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +29,7 @@ import java.util.stream.Stream;
 
 @WebMvcTest(controllers = AnimeController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ComponentScan("academy.devdojo")
+@ComponentScan(basePackages = {"academy.devdojo.anime", "academy.devdojo.commons"})
 class AnimeControllerTest {
 
     private static final String URL = "/v1/animes";
@@ -42,12 +39,6 @@ class AnimeControllerTest {
 
     @MockitoBean
     private AnimeRepository repository;
-
-    @MockitoBean
-    private ProducerRepository producerRepository;
-
-    @MockitoBean
-    private ProducerService producerService;
 
     @Autowired
     private AnimeUtils animeUtils;

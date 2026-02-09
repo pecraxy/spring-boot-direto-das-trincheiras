@@ -1,8 +1,7 @@
-package academy.devdojo.service;
+package academy.devdojo.anime;
 
 import academy.devdojo.commons.AnimeUtils;
 import academy.devdojo.domain.Anime;
-import academy.devdojo.repository.AnimeRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;

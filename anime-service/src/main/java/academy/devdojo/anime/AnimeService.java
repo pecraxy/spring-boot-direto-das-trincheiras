@@ -1,8 +1,7 @@
-package academy.devdojo.service;
+package academy.devdojo.anime;
 
 import academy.devdojo.domain.Anime;
 import academy.devdojo.exception.NotFoundException;
-import academy.devdojo.repository.AnimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,7 @@
-package academy.devdojo.service;
+package academy.devdojo.producer;
 
 import academy.devdojo.domain.Producer;
 import academy.devdojo.exception.NotFoundException;
-import academy.devdojo.repository.ProducerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

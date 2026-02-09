@@ -1,8 +1,7 @@
-package academy.devdojo.service;
+package academy.devdojo.producer;
 
 import academy.devdojo.commons.ProducerUtils;
 import academy.devdojo.domain.Producer;
-import academy.devdojo.repository.ProducerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
