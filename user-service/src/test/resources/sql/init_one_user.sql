@@ -1,0 +1,1 @@
+insert into "user" (first_name,last_name,email) values ('Weaver','Daemon','weaverdaemon@example.com')

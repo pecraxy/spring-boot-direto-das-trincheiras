@@ -16,7 +16,7 @@ public class UserUtils {
     }
 
     public User newUserToCreate() {
-        return User.builder().id(99L).firstName("Weaver").lastName("Daemon").email("weaverdaemon@example.com").build();
+        return User.builder().firstName("Weaver").lastName("Daemon").email("weaverdaemon@example.com").build();
     }
     public User newUserToCreateWithEmailAlreadyUsed() {
         return User.builder().id(99L).firstName("Bryan").lastName("Pinafffo").email("shadowslave@example.com").build();
