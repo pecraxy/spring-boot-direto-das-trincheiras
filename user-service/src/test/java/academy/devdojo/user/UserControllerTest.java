@@ -1,10 +1,9 @@
-package academy.devdojo.controller;
+package academy.devdojo.user;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import academy.devdojo.exception.EmailAlreadyExistsException;
-import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +14,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 
 @WebMvcTest(controllers = UserController.class)
-@ComponentScan("academy.devdojo")
+@ComponentScan(basePackages = {"academy.devdojo.user", "academy.devdojo.commons"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserControllerTest {
     @Autowired
@@ -126,7 +126,7 @@ class UserControllerTest {
         String request = fileUtils.readSourceFile("users/post-request-user-200.json");
         String response = fileUtils.readSourceFile("users/post-response-user-201.json");
 
-        User userToSave = userUtils.newUserToCreate();
+        User userToSave = userUtils.newUserToCreate().withId(99L);
         BDDMockito.when(repository.save(ArgumentMatchers.any())).thenReturn(userToSave);
 
         mockMvc.perform(MockMvcRequestBuilders

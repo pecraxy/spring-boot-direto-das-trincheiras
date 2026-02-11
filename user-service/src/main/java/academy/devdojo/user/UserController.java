@@ -1,12 +1,6 @@
-package academy.devdojo.controller;
+package academy.devdojo.user;
 
 import academy.devdojo.domain.User;
-import academy.devdojo.mapper.UserMapper;
-import academy.devdojo.request.UserPostRequest;
-import academy.devdojo.request.UserPutRequest;
-import academy.devdojo.response.UserGetResponse;
-import academy.devdojo.response.UserPostResponse;
-import academy.devdojo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,8 @@
-package academy.devdojo.service;
+package academy.devdojo.user;
 
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import academy.devdojo.exception.EmailAlreadyExistsException;
-import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -108,7 +107,7 @@ class UserServiceTest {
     @Order(6)
     @DisplayName("save creates an user")
     void save_createsAnUser_WhenSuccessful() {
-        var userToCreate = userUtils.newUserToCreate();
+        var userToCreate = userUtils.newUserToCreate().withId(4L);
 
         BDDMockito.when(repository.save(userToCreate)).thenReturn(userToCreate);
         BDDMockito.when(repository.findByEmail(userToCreate.getEmail())).thenReturn(Optional.empty());

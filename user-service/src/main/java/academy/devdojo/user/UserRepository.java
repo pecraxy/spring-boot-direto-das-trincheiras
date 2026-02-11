@@ -1,4 +1,4 @@
-package academy.devdojo.repository;
+package academy.devdojo.user;
 
 import academy.devdojo.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
