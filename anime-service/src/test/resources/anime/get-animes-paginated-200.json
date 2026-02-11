@@ -1,0 +1,45 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "name": "Naruto"
+    },
+    {
+      "id": 2,
+      "name": "Dragon Ball Z"
+    },
+    {
+      "id": 3,
+      "name": "Sword Art Online"
+    },
+    {
+      "id": 4,
+      "name": "Shangri-la Frontiers"
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 4,
+    "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 4,
+  "totalPages": 1,
+  "last": true,
+  "size": 4,
+  "number": 0,
+  "sort": {
+    "empty": true,
+    "sorted": false,
+    "unsorted": true
+  },
+  "numberOfElements": 4,
+  "first": true,
+  "empty": false
+}

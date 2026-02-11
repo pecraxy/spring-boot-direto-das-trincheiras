@@ -13,6 +13,9 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,10 +59,27 @@ class AnimeControllerTest {
     @DisplayName("GET v1/animes returns a list with all animes when argument is null")
     @Order(1)
     void findAll_ReturnAllAnimes_WhenArgumentIsNull() throws Exception {
+        var response = fileUtils.readResourceFile("anime/get-animes-null-name-200.json");
 
         BDDMockito.when(repository.findAll()).thenReturn(animeList);
-        var response = fileUtils.readResourceFile("anime/get-animes-null-name-200.json");
+
         mockMvc.perform(MockMvcRequestBuilders.get(URL))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(response));
+    }
+
+    @Test
+    @DisplayName("GET v1/animes/paginated returns paginated list of animes")
+    @Order(1)
+    void findAllPaginated_ReturnAllPaginatedAnimes_WhenSuccessful() throws Exception {
+        var response = fileUtils.readResourceFile("anime/get-animes-paginated-200.json");
+        PageRequest pageRequest = PageRequest.of(0, animeList.size());
+        PageImpl<Anime> pageAnime = new PageImpl<>(animeList, pageRequest, 1);
+
+        BDDMockito.when(repository.findAll(BDDMockito.any(Pageable.class))).thenReturn(pageAnime);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URL + "/paginated"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(response));
