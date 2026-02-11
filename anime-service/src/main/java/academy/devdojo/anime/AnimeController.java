@@ -3,6 +3,9 @@ package academy.devdojo.anime;
 import academy.devdojo.domain.Anime;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/animes")
-
+@Slf4j
 @RequiredArgsConstructor
 public class AnimeController {
 
@@ -27,6 +30,13 @@ public class AnimeController {
         List<AnimeGetResponse> response = mapper.toAnimeGetResponseList(animes);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<AnimeGetResponse>> findAllPaginated(Pageable pageable) {
+        log.debug("Request received to list all animes paginated");
+        Page<AnimeGetResponse> pageAnime = service.findAllPaginated(pageable).map(mapper::toAnimeGetResponse);
+        return ResponseEntity.ok(pageAnime);
     }
 
     @GetMapping("{id}")
