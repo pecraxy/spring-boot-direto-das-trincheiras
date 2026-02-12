@@ -19,5 +19,4 @@ public class Profile {
     private String name;
     @Column(nullable = false)
     private String description;
-
 }
