@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Dj Talala",
+    "description": "O Bruxo da Putaria"
+  },
+  {
+    "id": 2,
+    "name": "Dj Blakes",
+    "description": "Lança as pura porra, só mandelão original"
+  },
+  {
+    "id": 3,
+    "name": "Bryan Pinaffo",
+    "description": "Batata"
+  },
+  {
+    "id": 4,
+    "name": "Devdojo",
+    "description": "Os Melhores Cursos de Todos"
+  },
+  {
+    "id": 5,
+    "name": "Boca de Pelo",
+    "description": "Beijou a Mina que Mamou o Bonde Inteiro"
+  },
+  {
+    "id": 6,
+    "name": "Alexandre Demorais",
+    "description": "Demorando aqui fio"
+  },
+  {
+    "id": 7,
+    "name": "Unchroma",
+    "description": "Código UNCHROMA10 na Blaze"
+  }
+]
