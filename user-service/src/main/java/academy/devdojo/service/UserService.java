@@ -1,8 +1,9 @@
-package academy.devdojo.user;
+package academy.devdojo.service;
 
 import academy.devdojo.domain.User;
 import academy.devdojo.exception.EmailAlreadyExistsException;
 import academy.devdojo.exception.NotFoundException;
+import academy.devdojo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;

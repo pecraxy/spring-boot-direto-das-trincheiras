@@ -1,7 +1,8 @@
-package academy.devdojo.profile;
+package academy.devdojo.service;
 
 import academy.devdojo.domain.Profile;
 import academy.devdojo.exception.NotFoundException;
+import academy.devdojo.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,20 +17,12 @@ public class ProfileService {
 
     private final ProfileRepository repository;
 
-    public List<Profile> findAll(@Nullable String name) {
-        return name == null ? repository.findAll() : repository.findByName(name);
-    }
-
-    public Page<Profile> findAllPaginated(Pageable pageable) {
-        return repository.findAll(pageable);
+    public List<Profile> findAll() {
+        return repository.findAll();
     }
 
     public Profile save(Profile profile) {
         return repository.save(profile);
-    }
-
-    public Profile findByIdOrThrowResponseStatusException(Long id) {
-        return repository.findById(id).orElseThrow(() -> new NotFoundException("Profile not found"));
     }
 
 }

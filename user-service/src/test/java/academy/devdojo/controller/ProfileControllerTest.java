@@ -1,9 +1,11 @@
-package academy.devdojo.profile;
+package academy.devdojo.controller;
 
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProfileUtils;
 import academy.devdojo.domain.Profile;
+import academy.devdojo.repository.ProfileRepository;
+import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +16,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +36,7 @@ import java.util.stream.Stream;
 
 @WebMvcTest(ProfileController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ComponentScan({"academy.devdojo.profile", "academy.devdojo.commons"})
+@ComponentScan({"academy.devdojo"})
 class ProfileControllerTest {
 
     private final String URL = "/v1/profiles";
@@ -50,6 +53,9 @@ class ProfileControllerTest {
     @MockitoBean
     private ProfileRepository repository;
 
+    @MockitoBean
+    private UserRepository userRepository;
+
     private List<Profile> profileList;
 
     @BeforeEach
@@ -58,9 +64,9 @@ class ProfileControllerTest {
     }
 
     @Test
-    @DisplayName("GET /v1/profiles returns a list with all profiles when argument is null")
+    @DisplayName("GET /v1/profiles returns a list with all profiles")
     @Order(1)
-    void findAll_ReturnsAllProfiles_WhenArgumentIsNull() throws Exception {
+    void findAll_ReturnsAllProfiles_WhenSuccessful() throws Exception {
         var response = fileUtils.readSourceFile("profiles/get-profiles-200.json");
 
         BDDMockito.when(repository.findAll()).thenReturn(profileList);
@@ -73,93 +79,14 @@ class ProfileControllerTest {
     }
 
     @Test
-    @DisplayName("GET /v1/profiles?name=Admin returns a list with found Profile when name exists")
-    @Order(2)
-    void findAll_ReturnsListWithFoundProfile_WhenNameExists() throws Exception {
-        var response = fileUtils.readSourceFile("profiles/get-profiles-name-admin-200.json");
-
-        var name = "Admin";
-        var expectedProfile = profileList.stream().filter(profile -> profile.getName().equals(name)).findFirst().orElse(null);
-
-        BDDMockito.when(repository.findByName(name)).thenReturn(Collections.singletonList(expectedProfile));
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URL).param("name", name))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @DisplayName("GET /v1/profiles?name=not-found returns empty list when name is not found")
-    @Order(3)
-    void findAll_ReturnsEmptyList_WhenNameIsNotFound() throws Exception {
-        var response = fileUtils.readSourceFile("profiles/get-profiles-name-not-found-200.json");
-
-        var name = "not-found";
-
-        BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URL).param("name", name))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @DisplayName("GET /v1/profiles/paginated returns paginated list of Profiles")
-    @Order(4)
-    void findAllPaginated_ReturnAllPaginatedProfiles_WhenSuccessful() throws Exception {
-        var response = fileUtils.readSourceFile("profiles/get-profiles-paginated-200.json");
-        PageRequest pageRequest = PageRequest.of(0, 20);
-        PageImpl<Profile> pageProfile = new PageImpl<>(profileList, pageRequest, 1);
-        BDDMockito.when(repository.findAll(BDDMockito.any(Pageable.class))).thenReturn(pageProfile);
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URL + "/paginated"))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(5)
-    @DisplayName("GET /v1/profiles/1 returns Profile when successful")
-    void findById_ReturnsProfile_WhenSuccessful() throws Exception {
-        var response = fileUtils.readSourceFile("profiles/get-profiles-by-id-1-200.json");
-        var expectedId = 1L;
-        Profile expectedProfile = profileList.stream().filter(profile -> profile.getId().equals(expectedId)).findFirst().orElse(null);
-
-        BDDMockito.when(repository.findById(expectedId)).thenReturn(Optional.of(expectedProfile));
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", expectedId))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
-    @Order(6)
-    @DisplayName("GET /v1/profiles/1 throws ResponseStatusException 404 when Profile is not found")
-    void findById_ThrowsResponseStatusException_WhenProfileIsNotFound() throws Exception {
-        var response = fileUtils.readSourceFile("profiles/get-profiles-by-id-99-404.json");
-        var expectedId = 99L;
-
-        BDDMockito.when(repository.findById(expectedId)).thenReturn(Optional.empty());
-
-        mockMvc.perform(MockMvcRequestBuilders.get(URL + "/{id}", expectedId))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().json(response));
-    }
-
-    @Test
     @Order(7)
     @DisplayName("POST v1/profiles save a Profile when successful")
     void save_SaveAProfile_WhenSuccessful() throws Exception {
         var request = fileUtils.readSourceFile("profiles/post-request-profiles-201.json");
         var response = fileUtils.readSourceFile("profiles/post-response-profiles-201.json");
 
-        var expectedProfileCreated = profileUtils.newProfileToSave().withId(99L);
-        BDDMockito.when(repository.save(ArgumentMatchers.any())).thenReturn(expectedProfileCreated);
+        var expectedProfileSaved = profileUtils.newProfileSaved();
+        BDDMockito.when(repository.save(ArgumentMatchers.any())).thenReturn(expectedProfileSaved);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(request)

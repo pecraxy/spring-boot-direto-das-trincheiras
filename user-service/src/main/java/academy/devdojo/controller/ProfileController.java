@@ -1,6 +1,11 @@
-package academy.devdojo.profile;
+package academy.devdojo.controller;
 
 import academy.devdojo.domain.Profile;
+import academy.devdojo.mapper.ProfileMapper;
+import academy.devdojo.request.ProfilePostRequest;
+import academy.devdojo.service.ProfileService;
+import academy.devdojo.response.ProfileGetResponse;
+import academy.devdojo.response.ProfilePostResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,34 +28,12 @@ public class ProfileController {
     private final ProfileMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<ProfileGetResponse>> listAll(@RequestParam(required = false) String name) {
-        log.debug("Receiving request to list all profiles with parameter 'name' {}", name);
+    public ResponseEntity<List<ProfileGetResponse>> listAll() {
+        log.debug("Receiving request to list all profiles");
 
-        List<Profile> profilesFound = service.findAll(name);
+        List<Profile> profilesFound = service.findAll();
 
         List<ProfileGetResponse> response = mapper.toProfileGetResponseList(profilesFound);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/paginated")
-    public ResponseEntity<Page<ProfileGetResponse>> listAllPaginated(Pageable pageable) {
-        log.debug("Receiving request to list paginated profiles");
-
-        Page<Profile> profilesFound = service.findAllPaginated(pageable);
-
-        Page<ProfileGetResponse> response = profilesFound.map(mapper::toProfileGetResponse);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<ProfileGetResponse> findById(@PathVariable Long id) {
-        log.debug("Receiving request to find profile by id with id '{}'", id);
-
-        Profile foundProfile = service.findByIdOrThrowResponseStatusException(id);
-
-        ProfileGetResponse response = mapper.toProfileGetResponse(foundProfile);
 
         return ResponseEntity.ok(response);
     }

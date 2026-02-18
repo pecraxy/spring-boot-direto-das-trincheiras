@@ -1,4 +1,4 @@
-package academy.devdojo.profile;
+package academy.devdojo.repository;
 
 import academy.devdojo.commons.ProfileUtils;
 import academy.devdojo.domain.Profile;

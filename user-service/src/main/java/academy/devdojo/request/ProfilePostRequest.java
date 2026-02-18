@@ -1,4 +1,4 @@
-package academy.devdojo.profile;
+package academy.devdojo.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

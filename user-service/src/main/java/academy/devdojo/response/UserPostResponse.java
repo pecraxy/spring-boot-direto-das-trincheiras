@@ -1,10 +1,10 @@
-package academy.devdojo.profile;
+package academy.devdojo.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ProfilePostResponse {
+public class UserPostResponse {
     private Long id;
 }

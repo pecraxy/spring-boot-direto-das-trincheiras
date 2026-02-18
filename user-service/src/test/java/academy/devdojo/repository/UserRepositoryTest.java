@@ -1,4 +1,4 @@
-package academy.devdojo.user;
+package academy.devdojo.repository;
 
 import academy.devdojo.commons.UserUtils;
 import org.assertj.core.api.Assertions;

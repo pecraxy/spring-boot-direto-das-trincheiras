@@ -1,9 +1,11 @@
-package academy.devdojo.user;
+package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.UserUtils;
 import academy.devdojo.domain.User;
 import academy.devdojo.exception.EmailAlreadyExistsException;
+import academy.devdojo.repository.ProfileRepository;
+import academy.devdojo.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +16,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,7 +32,7 @@ import java.util.stream.Stream;
 
 
 @WebMvcTest(controllers = UserController.class)
-@ComponentScan(basePackages = {"academy.devdojo.user", "academy.devdojo.commons"})
+@ComponentScan({"academy.devdojo"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserControllerTest {
     @Autowired
@@ -43,6 +46,9 @@ class UserControllerTest {
 
     @MockitoBean
     private UserRepository repository;
+
+    @MockitoBean
+    private ProfileRepository profileRepository;
 
     private List<User> userList;
 
