@@ -14,7 +14,6 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -149,9 +148,9 @@ class UserControllerTest {
         String emailAlreadyUsed = userUtils.newUserToCreateWithEmailAlreadyUsed().getEmail();
         BDDMockito.when(repository.save(ArgumentMatchers.any())).thenThrow(new EmailAlreadyExistsException("Email %s already exists".formatted(emailAlreadyUsed)));
         mockMvc.perform(MockMvcRequestBuilders
-                    .post(URL)
-                    .content(request)
-                    .contentType(MediaType.APPLICATION_JSON)
+                        .post(URL)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())

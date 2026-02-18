@@ -24,7 +24,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("save creates an user")
     @Order(1)
-    void save_CreatesUser_WhenSuccessful(){
+    void save_CreatesUser_WhenSuccessful() {
         var userToSave = userUtils.newUserToCreate();
 
         var savedUser = repository.save(userToSave);

@@ -23,7 +23,7 @@ public class ProfileController {
     private final ProfileMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<ProfileGetResponse>> listAll(@RequestParam(required = false) String name){
+    public ResponseEntity<List<ProfileGetResponse>> listAll(@RequestParam(required = false) String name) {
         log.debug("Receiving request to list all profiles with parameter 'name' {}", name);
 
         List<Profile> profilesFound = service.findAll(name);
@@ -34,7 +34,7 @@ public class ProfileController {
     }
 
     @GetMapping("/paginated")
-    public ResponseEntity<Page<ProfileGetResponse>> listAllPaginated(Pageable pageable){
+    public ResponseEntity<Page<ProfileGetResponse>> listAllPaginated(Pageable pageable) {
         log.debug("Receiving request to list paginated profiles");
 
         Page<Profile> profilesFound = service.findAllPaginated(pageable);
@@ -45,7 +45,7 @@ public class ProfileController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ProfileGetResponse> findById(@PathVariable Long id){
+    public ResponseEntity<ProfileGetResponse> findById(@PathVariable Long id) {
         log.debug("Receiving request to find profile by id with id '{}'", id);
 
         Profile foundProfile = service.findByIdOrThrowResponseStatusException(id);
@@ -56,7 +56,7 @@ public class ProfileController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProfilePostResponse> save(@Valid @RequestBody ProfilePostRequest profilePostRequest){
+    public ResponseEntity<ProfilePostResponse> save(@Valid @RequestBody ProfilePostRequest profilePostRequest) {
         log.debug("Receiving request to save profile with payload {}", profilePostRequest);
 
         Profile profileToSave = mapper.toProfile(profilePostRequest);

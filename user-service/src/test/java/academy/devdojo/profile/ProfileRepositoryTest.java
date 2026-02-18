@@ -29,8 +29,8 @@ class ProfileRepositoryTest {
     @Test
     @Order(1)
     @DisplayName("save Creates a Profile When Successful")
-    void save_CreatesAProfile_WhenSuccessful(){
-        Profile profileToCreate = profileUtils.newProfileToCreate();
+    void save_CreatesAProfile_WhenSuccessful() {
+        Profile profileToCreate = profileUtils.newProfileToSave();
         Profile savedUser = repository.save(profileToCreate);
         Assertions.assertThat(savedUser)
                 .isNotNull()
@@ -41,7 +41,7 @@ class ProfileRepositoryTest {
     @Order(2)
     @DisplayName("findAll returns all users when successful")
     @Sql(scripts = "/sql/init_one_profile.sql")
-    void findAll_returnsAllUsers_WhenSuccessful(){
+    void findAll_returnsAllUsers_WhenSuccessful() {
         List<Profile> profiles = repository.findAll();
         Assertions.assertThat(profiles)
                 .isNotNull()

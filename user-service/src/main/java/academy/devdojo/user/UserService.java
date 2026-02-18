@@ -22,7 +22,7 @@ public class UserService {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-//    @Transactional
+    //    @Transactional
     public User save(User user) {
         assertEmailDoesNotExists(user.getEmail());
         return repository.save(user);

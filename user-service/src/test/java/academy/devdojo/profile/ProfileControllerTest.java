@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +53,7 @@ class ProfileControllerTest {
     private List<Profile> profileList;
 
     @BeforeEach
-    void init(){
+    void init() {
         profileList = profileUtils.newProfileList();
     }
 
@@ -74,12 +73,12 @@ class ProfileControllerTest {
     }
 
     @Test
-    @DisplayName("GET /v1/profiles?name=Dj Talala returns a list with found Profile when name exists")
+    @DisplayName("GET /v1/profiles?name=Admin returns a list with found Profile when name exists")
     @Order(2)
     void findAll_ReturnsListWithFoundProfile_WhenNameExists() throws Exception {
-        var response = fileUtils.readSourceFile("profiles/get-profiles-name-dj-talala-200.json");
+        var response = fileUtils.readSourceFile("profiles/get-profiles-name-admin-200.json");
 
-        var name = "Dj Talala";
+        var name = "Admin";
         var expectedProfile = profileList.stream().filter(profile -> profile.getName().equals(name)).findFirst().orElse(null);
 
         BDDMockito.when(repository.findByName(name)).thenReturn(Collections.singletonList(expectedProfile));
@@ -159,7 +158,7 @@ class ProfileControllerTest {
         var request = fileUtils.readSourceFile("profiles/post-request-profiles-201.json");
         var response = fileUtils.readSourceFile("profiles/post-response-profiles-201.json");
 
-        var expectedProfileCreated = profileUtils.newProfileToCreate().withId(99L);
+        var expectedProfileCreated = profileUtils.newProfileToSave().withId(99L);
         BDDMockito.when(repository.save(ArgumentMatchers.any())).thenReturn(expectedProfileCreated);
 
         mockMvc.perform(MockMvcRequestBuilders.post(URL)
@@ -192,7 +191,7 @@ class ProfileControllerTest {
 
     }
 
-    private static Stream<Arguments> postProfileBadRequestSource(){
+    private static Stream<Arguments> postProfileBadRequestSource() {
         var allRequiredErrors = allRequiredErrors();
 
         return Stream.of(
@@ -201,9 +200,9 @@ class ProfileControllerTest {
         );
     }
 
-    private static List<String> allRequiredErrors(){
+    private static List<String> allRequiredErrors() {
         var nameRequiredError = "The field 'name' is required";
-        var descriptionRequiredError  = "The field 'description' is required";
+        var descriptionRequiredError = "The field 'description' is required";
         return new ArrayList<>(List.of(nameRequiredError, descriptionRequiredError));
     }
 

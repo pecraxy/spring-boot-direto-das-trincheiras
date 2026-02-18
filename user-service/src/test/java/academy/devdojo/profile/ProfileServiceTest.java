@@ -41,7 +41,7 @@ class ProfileServiceTest {
     @Test
     @Order(1)
     @DisplayName("findAll returns a list with all producers when arguments are null")
-    void findAll_ReturnAllProfiles_WhenArgumentsAreNull(){
+    void findAll_ReturnAllProfiles_WhenArgumentsAreNull() {
         BDDMockito.when(repository.findAll()).thenReturn(profileList);
         var producers = service.findAll(null);
         Assertions.assertThat(producers)
@@ -54,7 +54,7 @@ class ProfileServiceTest {
     @Test
     @Order(2)
     @DisplayName("findAll returns a list with found Profile when name exists")
-    void findAll_returnsFoundProfile_WhenNameExists(){
+    void findAll_returnsFoundProfile_WhenNameExists() {
         var expectedProfile = profileList.getFirst();
         var name = expectedProfile.getName();
 
@@ -72,7 +72,7 @@ class ProfileServiceTest {
     @Test
     @Order(3)
     @DisplayName("findAll returns empty list when name is not found")
-    void findAll_returnsEmptyList_WhenNameIsNotFound(){
+    void findAll_returnsEmptyList_WhenNameIsNotFound() {
         var name = "not-found";
 
         BDDMockito.when(repository.findByName(name)).thenReturn(Collections.emptyList());
@@ -87,7 +87,7 @@ class ProfileServiceTest {
     @Test
     @Order(4)
     @DisplayName("findAllPaginated returns all paginated profiles when successful")
-    void findAllPaginated_ReturnAllPaginatedProfiles_WhenSuccessful(){
+    void findAllPaginated_ReturnAllPaginatedProfiles_WhenSuccessful() {
         PageRequest pageRequest = PageRequest.of(0, profileList.size());
         PageImpl<Profile> pageProfile = new PageImpl<>(profileList, pageRequest, 1);
 
@@ -104,7 +104,7 @@ class ProfileServiceTest {
     @Test
     @Order(5)
     @DisplayName("findById returns Profile when successful")
-    void findById_ReturnsProfile_WhenSuccessful(){
+    void findById_ReturnsProfile_WhenSuccessful() {
         var id = 1L;
         Profile expectedProfile = profileList.getFirst();
 
@@ -120,7 +120,7 @@ class ProfileServiceTest {
     @Test
     @Order(6)
     @DisplayName("findById throws ResponseStatusException when Profile is not found")
-    void findById_ThrowsResponseStatusException_WhenProfileIsNotFound(){
+    void findById_ThrowsResponseStatusException_WhenProfileIsNotFound() {
         var id = 99L;
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.empty());
         Assertions.assertThatException()
@@ -131,15 +131,18 @@ class ProfileServiceTest {
     @Test
     @Order(6)
     @DisplayName("save save a Profile when successful")
-    void save_SaveAProfile_WhenSuccessful(){
-        Profile newProfileToCreate = profileUtils.newProfileToCreate().withId(99L);
-        BDDMockito.when(repository.save(BDDMockito.any())).thenReturn(newProfileToCreate);
+    void save_SaveAProfile_WhenSuccessful() {
+        Profile newProfileToCreate = profileUtils.newProfileToSave();
+        Profile profileSaved = profileUtils.newProfileSaved();
+
+        BDDMockito.when(repository.save(BDDMockito.any())).thenReturn(profileSaved);
+
         Profile savedProfile = service.save(newProfileToCreate);
 
         Assertions.assertThat(savedProfile)
                 .isNotNull()
                 .hasNoNullFieldsOrProperties()
-                .isEqualTo(newProfileToCreate);
+                .isEqualTo(profileSaved);
     }
 
 

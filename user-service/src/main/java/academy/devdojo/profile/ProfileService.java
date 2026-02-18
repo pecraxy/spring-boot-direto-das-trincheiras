@@ -16,19 +16,19 @@ public class ProfileService {
 
     private final ProfileRepository repository;
 
-    public List<Profile> findAll(@Nullable String name){
+    public List<Profile> findAll(@Nullable String name) {
         return name == null ? repository.findAll() : repository.findByName(name);
     }
 
-    public Page<Profile> findAllPaginated(Pageable pageable){
+    public Page<Profile> findAllPaginated(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
-    public Profile save(Profile profile){
+    public Profile save(Profile profile) {
         return repository.save(profile);
     }
 
-    public Profile findByIdOrThrowResponseStatusException(Long id){
+    public Profile findByIdOrThrowResponseStatusException(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("Profile not found"));
     }
 
