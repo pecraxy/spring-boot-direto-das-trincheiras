@@ -17,6 +17,7 @@ public class ProfileUtils {
     public Profile newProfileToSave() {
         return Profile.builder().name("Regular User").description("Regular user with regular permissions").build();
     }
+
     public Profile newProfileSaved() {
         return Profile.builder().id(99L).name("Regular User").description("Regular user with regular permissions").build();
     }
