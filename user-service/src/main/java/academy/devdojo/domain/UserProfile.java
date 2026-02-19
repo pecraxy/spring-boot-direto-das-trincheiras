@@ -19,4 +19,5 @@ public class UserProfile {
     private User user;
     @ManyToOne(optional = false)
     private Profile profile;
+
 }
