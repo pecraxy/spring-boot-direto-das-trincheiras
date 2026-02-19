@@ -1,5 +1,6 @@
 package academy.devdojo.service;
 
+import academy.devdojo.domain.User;
 import academy.devdojo.domain.UserProfile;
 import academy.devdojo.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,10 @@ public class UserProfileService {
 
     public List<UserProfile> findAll() {
         return repository.findAll();
+    }
+
+    public List<User> findUsersByProfileId(Long profileId) {
+        return repository.findUsersByProfileId(profileId);
     }
 
 

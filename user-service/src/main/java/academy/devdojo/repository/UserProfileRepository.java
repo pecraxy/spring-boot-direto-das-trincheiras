@@ -1,5 +1,6 @@
 package academy.devdojo.repository;
 
+import academy.devdojo.domain.User;
 import academy.devdojo.domain.UserProfile;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
     @EntityGraph(value = "UserProfile.fullDetails")
     List<UserProfile> findAll();
+
+    @Query("SELECT DISTINCT up.user from UserProfile up join up.profile p WHERE p.id = :id")
+    List<User> findUsersByProfileId(Long id);
 }
