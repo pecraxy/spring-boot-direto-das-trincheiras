@@ -34,7 +34,8 @@ public class UserProfileController {
 
     @GetMapping("/profiles/{id}/users")
     public ResponseEntity<List<UserProfileUserGetResponse>> findById(@PathVariable Long id) {
-        List<User> foundUsers = service.findUsersByProfileId(id);
+        log.debug("Request received to list all users by profile id '{}'", id);
+        List<User> foundUsers = service.findAllUsersByProfileId(id);
         List<UserProfileUserGetResponse> response = mapper.toUserProfileUserGetResponse(foundUsers);
         return ResponseEntity.ok(response);
     }

@@ -16,6 +16,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     @EntityGraph(value = "UserProfile.fullDetails")
     List<UserProfile> findAll();
 
-    @Query("SELECT DISTINCT up.user from UserProfile up join up.profile p WHERE p.id = :id")
-    List<User> findUsersByProfileId(Long id);
+    @Query("SELECT DISTINCT up.user from UserProfile up WHERE up.profile.id = :id")
+    List<User> findAllUsersByProfileId(Long id);
 }
