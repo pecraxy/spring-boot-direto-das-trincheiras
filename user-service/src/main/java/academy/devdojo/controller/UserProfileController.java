@@ -4,6 +4,7 @@ import academy.devdojo.domain.User;
 import academy.devdojo.domain.UserProfile;
 import academy.devdojo.mapper.UserProfileMapper;
 import academy.devdojo.response.UserProfileGetResponse;
+import academy.devdojo.response.UserProfileUserGetResponse;
 import academy.devdojo.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,9 @@ public class UserProfileController {
     }
 
     @GetMapping("/profiles/{id}/users")
-    public ResponseEntity<List<User>> findById(@PathVariable Long id) {
-        List<User> response = service.findUsersByProfileId(id);
+    public ResponseEntity<List<UserProfileUserGetResponse>> findById(@PathVariable Long id) {
+        List<User> foundUsers = service.findUsersByProfileId(id);
+        List<UserProfileUserGetResponse> response = mapper.toUserProfileUserGetResponse(foundUsers);
         return ResponseEntity.ok(response);
     }
 }
