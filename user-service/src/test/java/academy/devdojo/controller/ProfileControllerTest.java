@@ -7,7 +7,6 @@ import academy.devdojo.domain.Profile;
 import academy.devdojo.repository.ProfileRepository;
 import academy.devdojo.repository.UserProfileRepository;
 import academy.devdojo.repository.UserRepository;
-import academy.devdojo.service.UserProfileService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -74,7 +73,6 @@ class ProfileControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(response));
-
     }
 
     @Test
