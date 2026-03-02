@@ -33,6 +33,7 @@
         <commons-core.version>0.0.1-SNAPSHOT</commons-core.version>
         <mysql-connector-j.version>9.0.0</mysql-connector-j.version>
         <maven.compiler.release>21</maven.compiler.release>
+        <json-unit-assertj.version>3.4.1</json-unit-assertj.version>
     </properties>
     <dependencies>
 
@@ -101,6 +102,13 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.javacrumbs.json-unit</groupId>
+            <artifactId>json-unit-assertj</artifactId>
+            <version>${json-unit-assertj.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -2,19 +2,25 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProfileUtils;
-import academy.devdojo.domain.Profile;
 import academy.devdojo.response.ProfileGetResponse;
 import academy.devdojo.response.ProfilePostResponse;
+import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
@@ -70,6 +76,32 @@ class ProfileControllerTestIT {
         assertThat(responseEntity).isNotNull();
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(responseEntity.getBody()).isNotNull().hasNoNullFieldsOrProperties();
+    }
+
+    @ParameterizedTest
+    @MethodSource("postProfileBadRequestSource")
+    @Order(4)
+    @DisplayName("POST v1/profiles returns bad request when fields are empty or invalid")
+    void save_ReturnsBadRequest_WhenFieldsAreEmptyOrInvalid(String requestFile, String responseFile) throws Exception {
+        var request = fileUtils.readSourceFile("/profiles/%s".formatted(requestFile));
+        var expectedResponse = fileUtils.readSourceFile("/profiles/%s".formatted(responseFile));
+
+        var profileEntity = buildHttpEntity(request);
+        var responseEntity = testRestTemplate.exchange(URL, POST, profileEntity, String.class);
+
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        JsonAssertions.assertThatJson(responseEntity.getBody())
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponse);
+    }
+
+    private static Stream<Arguments> postProfileBadRequestSource() {
+        return Stream.of(
+                Arguments.of("post-request-profile-empty-fields-400.json", "post-response-profile-empty-fields-400.json"),
+                Arguments.of("post-request-profile-blank-fields-400.json", "post-response-profile-blank-fields-400.json")
+        );
     }
 
     private static HttpEntity<String> buildHttpEntity(String request) {
