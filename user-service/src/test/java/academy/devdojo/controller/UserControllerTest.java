@@ -34,12 +34,7 @@ import java.util.stream.Stream;
 
 
 @WebMvcTest(controllers = UserController.class)
-@ComponentScan(
-        value = {"academy.devdojo"},
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = TestcontainersConfiguration.class
-        ))
+@ComponentScan({"academy.devdojo"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserControllerTest {
     @Autowired

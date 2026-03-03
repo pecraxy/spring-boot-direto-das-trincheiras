@@ -33,12 +33,7 @@ import java.util.stream.Stream;
 
 @WebMvcTest(ProfileController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ComponentScan(
-        value = {"academy.devdojo"},
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = TestcontainersConfiguration.class
-        ))
+@ComponentScan({"academy.devdojo"})
 class ProfileControllerTest {
 
     private final String URL = "/v1/profiles";

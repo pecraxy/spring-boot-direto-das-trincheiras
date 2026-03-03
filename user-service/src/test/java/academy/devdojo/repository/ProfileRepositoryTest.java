@@ -1,6 +1,7 @@
 package academy.devdojo.repository;
 
 import academy.devdojo.commons.ProfileUtils;
+import academy.devdojo.config.IntegrationTestConfig;
 import academy.devdojo.config.TestcontainersConfiguration;
 import academy.devdojo.domain.Profile;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +18,9 @@ import java.util.List;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Import({ProfileUtils.class, TestcontainersConfiguration.class})
+@Import({ProfileUtils.class})
 @Slf4j
-class ProfileRepositoryTest {
+class ProfileRepositoryTest extends IntegrationTestConfig {
 
     @Autowired
     private ProfileRepository repository;
