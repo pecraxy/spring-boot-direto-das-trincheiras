@@ -2,7 +2,6 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.config.IntegrationTestConfig;
-import academy.devdojo.config.TestcontainersConfiguration;
 import academy.devdojo.response.ProfileGetResponse;
 import academy.devdojo.response.ProfilePostResponse;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
@@ -13,13 +12,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -43,7 +40,8 @@ class ProfileControllerTestIT extends IntegrationTestConfig {
 
     @Test
     @DisplayName("GET /v1/profiles returns a list with all profiles")
-    @Sql(value = "/sql/init_two_profiles.sql")
+    @Sql(value = "/sql/init_two_profiles.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_profiles.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Order(1)
     void findAll_ReturnsAllProfiles_WhenSuccessful() {
         var typeReference = new ParameterizedTypeReference<List<ProfileGetResponse>>() {};
@@ -54,16 +52,16 @@ class ProfileControllerTestIT extends IntegrationTestConfig {
         responseEntity.getBody().forEach(profile -> assertThat(profile).hasNoNullFieldsOrProperties());
     }
 
-//    @Test
-//    @DisplayName("GET /v1/profiles returns empty list when nothing is not found")
-//    @Order(2)
-//    void findAll_ReturnsEmptyList_WhenNothingIsNotFound() {
-//        var typeReference = new ParameterizedTypeReference<List<ProfileGetResponse>>() {};
-//        var responseEntity = testRestTemplate.exchange(URL, GET, null, typeReference);
-//        assertThat(responseEntity).isNotNull();
-//        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        assertThat(responseEntity.getBody()).isNotNull().isEmpty();
-//    }
+    @Test
+    @DisplayName("GET /v1/profiles returns empty list when nothing is not found")
+    @Order(2)
+    void findAll_ReturnsEmptyList_WhenNothingIsNotFound() {
+        var typeReference = new ParameterizedTypeReference<List<ProfileGetResponse>>() {};
+        var responseEntity = testRestTemplate.exchange(URL, GET, null, typeReference);
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull().isEmpty();
+    }
 
     @Test
     @Order(3)
