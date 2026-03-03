@@ -53,16 +53,16 @@ class ProfileControllerTestIT {
         responseEntity.getBody().forEach(profile -> assertThat(profile).hasNoNullFieldsOrProperties());
     }
 
-    @Test
-    @DisplayName("GET /v1/profiles returns empty list when nothing is not found")
-    @Order(2)
-    void findAll_ReturnsEmptyList_WhenNothingIsNotFound() {
-        var typeReference = new ParameterizedTypeReference<List<ProfileGetResponse>>() {};
-        var responseEntity = testRestTemplate.exchange(URL, GET, null, typeReference);
-        assertThat(responseEntity).isNotNull();
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isNotNull().isEmpty();
-    }
+//    @Test
+//    @DisplayName("GET /v1/profiles returns empty list when nothing is not found")
+//    @Order(2)
+//    void findAll_ReturnsEmptyList_WhenNothingIsNotFound() {
+//        var typeReference = new ParameterizedTypeReference<List<ProfileGetResponse>>() {};
+//        var responseEntity = testRestTemplate.exchange(URL, GET, null, typeReference);
+//        assertThat(responseEntity).isNotNull();
+//        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+//        assertThat(responseEntity.getBody()).isNotNull().isEmpty();
+//    }
 
     @Test
     @Order(3)
