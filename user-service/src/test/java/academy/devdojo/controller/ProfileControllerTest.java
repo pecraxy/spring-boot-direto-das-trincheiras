@@ -3,6 +3,7 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.commons.ProfileUtils;
+import academy.devdojo.config.TestcontainersConfiguration;
 import academy.devdojo.domain.Profile;
 import academy.devdojo.repository.ProfileRepository;
 import academy.devdojo.repository.UserProfileRepository;
@@ -17,6 +18,7 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +33,12 @@ import java.util.stream.Stream;
 
 @WebMvcTest(ProfileController.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ComponentScan({"academy.devdojo"})
+@ComponentScan(
+        value = {"academy.devdojo"},
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = TestcontainersConfiguration.class
+        ))
 class ProfileControllerTest {
 
     private final String URL = "/v1/profiles";
