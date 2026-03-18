@@ -1,4 +1,1 @@
-{
-  "status": 400,
-  "message": "Email shadowslave@example.com already exists"
-}
+{"status":400,"message":"Email shadowslave@example.com already exists"}
