@@ -10,3 +10,6 @@ spring:
     properties:
       hibernate:
         globally_quoted_identifiers: true
+server:
+  error:
+    include-binding-errors: always
