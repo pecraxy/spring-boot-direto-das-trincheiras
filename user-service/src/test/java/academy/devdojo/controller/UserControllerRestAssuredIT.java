@@ -2,6 +2,7 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.config.IntegrationTestConfig;
+import academy.devdojo.domain.User;
 import academy.devdojo.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -149,7 +150,8 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
         RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
-                .get(URL + "/{id}", expectedId)
+                .pathParam("id", expectedId)
+                .get(URL + "/{id}")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .body(Matchers.equalTo(expectedResponse))
@@ -158,6 +160,8 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     @Test
     @Order(6)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("POST v1/users creates an user")
     void save_createsAnUser_WhenSuccessful() {
         String request = fileUtils.readSourceFile("users/post-request-user-200.json");
@@ -174,12 +178,19 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
                 .extract().response().body().asString();
 
         JsonAssertions.assertThatJson(response)
+                .node("id")
+                .asNumber()
+                .isPositive();
+
+        JsonAssertions.assertThatJson(response)
                 .whenIgnoringPaths("id")
                 .isEqualTo(expectedResponse);
     }
 
     @Test
     @Order(7)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("POST v1/users throws EmailAlreadyExistsException when email is already used")
     void save_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyUsed() {
         String request = fileUtils.readSourceFile("users/post-request-user-email-already-exists-400.json");
@@ -198,14 +209,18 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     @Test
     @Order(8)
-    @DisplayName("DELETE v1/users/2 deletes an user when user exists")
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @DisplayName("DELETE v1/users/1 deletes an user when user exists")
     void delete_deletesAnUser_whenUserExists() {
-        Long id = 2L;
+        List<User> users = userRepository.findByFirstNameEqualsIgnoreCase("Sunless");
+        Assertions.assertThat(users).hasSize(1);
 
         RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
-                .delete(URL + "/{id}", id)
+                .pathParam("id", users.getFirst().getId())
+                .delete(URL + "/{id}")
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .log().all();
@@ -216,21 +231,31 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
     @DisplayName("DELETE v1/users/99 throws NotFound 404 when user is not found")
     void delete_throwsNotFound_whenUserIsNotFound() {
         Long id = 99L;
+        var expectedResponse = fileUtils.readSourceFile("users/delete-user-by-id-99-404.json");
 
         RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
-                .delete(URL + "/{id}", id)
+                .pathParam("id", id)
+                .delete(URL + "/{id}")
                 .then()
+                .body(Matchers.equalTo(expectedResponse))
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .log().all();
     }
 
     @Test
     @Order(10)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("PUT v1/users updates an User")
     void update_updatesAnUser_WhenSuccessful() {
         String request = fileUtils.readSourceFile("users/put-request-user-200.json");
+
+        var users = userRepository.findByFirstNameEqualsIgnoreCase("Sunless");
+        Assertions.assertThat(users).hasSize(1);
+
+        request = request.replace("1", users.getFirst().getId().toString());
 
         RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
@@ -240,15 +265,21 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .log().all();
-
     }
 
     @Test
     @Order(11)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("PUT v1/users throws EmailAlreadyExistsException when e-mail is already used")
     void update_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyUsed() {
         String request = fileUtils.readSourceFile("users/put-request-user-email-already-exists-400.json");
         String expectedResponse = fileUtils.readSourceFile("users/put-response-user-email-already-exists-400.json");
+
+        var users = userRepository.findByFirstNameEqualsIgnoreCase("Sunless");
+        Assertions.assertThat(users).hasSize(1);
+
+        request = request.replace("1", users.getFirst().getId().toString());
 
         RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
