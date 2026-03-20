@@ -24,7 +24,7 @@ class UserProfileRepositoryTest extends IntegrationTestConfig {
     @Test
     @Order(1)
     @DisplayName("findUsersByProfileId returns a list with all users by profile id")
-    @Sql("/sql/init_user_profile_2_users_1_profile.sql")
+    @Sql("/sql/user_profile/init_user_profile_2_users_1_profile.sql")
     void findAllUsersByProfileId_returnsAllUsers_whenSuccessful() {
         var profileId = 1L;
         var users = repository.findAllUsersByProfileId(profileId);

@@ -41,7 +41,7 @@ class ProfileRepositoryTest extends IntegrationTestConfig {
     @Test
     @Order(2)
     @DisplayName("findAll returns all users when successful")
-    @Sql(scripts = "/sql/init_one_profile.sql")
+    @Sql(scripts = "/sql/profiles/init_one_profile.sql")
     void findAll_returnsAllUsers_WhenSuccessful() {
         List<Profile> profiles = repository.findAll();
         Assertions.assertThat(profiles)

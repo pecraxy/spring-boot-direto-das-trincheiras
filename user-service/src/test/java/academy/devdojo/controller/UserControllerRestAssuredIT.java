@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Sql(value = "/sql/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+
 class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     private final String URL = "/v1/users";
@@ -44,17 +44,29 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
     @Test
     @DisplayName("GET v1/users returns a list with all users when all arguments are null")
     @Order(1)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAll_ReturnsAllUsers_WhenAllArgumentsAreNull() {
         var expectedResponse = fileUtils.readSourceFile("users/get-users-200.json");
 
-        RestAssured.given()
+        String response = RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
                 .get(URL)
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(Matchers.equalTo(expectedResponse))
-                .log().all();
+                .log().all()
+                .extract().response().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .and(users -> {
+                    users.node("[0].id").asNumber().isPositive();
+                    users.node("[1].id").asNumber().isPositive();
+                    users.node("[2].id").asNumber().isPositive();
+                });
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("[*].id")
+                .isEqualTo(expectedResponse);
     }
 
     @Test
