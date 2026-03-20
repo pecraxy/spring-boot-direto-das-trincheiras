@@ -2,9 +2,11 @@ package academy.devdojo.controller;
 
 import academy.devdojo.commons.FileUtils;
 import academy.devdojo.config.IntegrationTestConfig;
+import academy.devdojo.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +25,6 @@ import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-
 class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     private final String URL = "/v1/users";
@@ -33,6 +34,9 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     @Autowired
     private FileUtils fileUtils;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUrl() {
@@ -71,31 +75,38 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     @Test
     @DisplayName("GET v1/users?firstName=Sunless returns a list with found user when firstName exists")
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Order(2)
     void findAll_returnsFoundUser_whenFirstNameExists() {
         var firstName = "Sunless";
         var expectedResponse = fileUtils.readSourceFile("users/get-users-firstName-sunless-200.json");
-        RestAssured.given()
-                .with().param("firstName", firstName)
+        String response = RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
+                .queryParam("firstName", firstName)
                 .get(URL)
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(Matchers.equalTo(expectedResponse))
-                .log().all();
+                .log().all()
+                .extract().response().body().asString();
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("[*].id")
+                .isEqualTo(expectedResponse);
     }
 
     @Test
     @Order(3)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("GET v1/users?firstName=not-found returns empty list when firstName is not found")
     void findAll_returnsEmptyList_whenFirstNameIsNotFound() {
         var firstName = "not-found";
         var expectedResponse = fileUtils.readSourceFile("users/get-users-firstName-notFound-x-200.json");
         RestAssured.given()
-                .with().param("firstName", firstName)
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
+                .queryParam("firstName", firstName)
                 .get(URL)
                 .then()
                 .statusCode(HttpStatus.OK.value())
@@ -105,18 +116,26 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
     @Test
     @Order(4)
+    @Sql(value = "/sql/users/init_three_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("GET v1/users/1 returns user when successful")
     void findById_returnsUserWhenSuccessful() {
-        Long expectedId = 1L;
+        var users = userRepository.findByFirstNameEqualsIgnoreCase("Sunless");
+        Assertions.assertThat(users).hasSize(1);
         String expectedResponse = fileUtils.readSourceFile("users/get-users-by-id-1-200.json");
-        RestAssured.given()
+
+        String response = RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .when()
-                .get(URL + "/{id}", expectedId)
+                .pathParam("id", users.getFirst().getId())
+                .get(URL + "/{id}")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(Matchers.equalTo(expectedResponse))
-                .log().all();
+                .log().all()
+                .extract().response().body().asString();
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("id")
+                .isEqualTo(expectedResponse);
     }
 
     @Test
