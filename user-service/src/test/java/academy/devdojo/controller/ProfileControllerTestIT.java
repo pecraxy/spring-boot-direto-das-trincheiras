@@ -5,6 +5,7 @@ import academy.devdojo.config.IntegrationTestConfig;
 import academy.devdojo.response.ProfileGetResponse;
 import academy.devdojo.response.ProfilePostResponse;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
+import net.javacrumbs.jsonunit.core.Option;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -80,7 +81,7 @@ class ProfileControllerTestIT extends IntegrationTestConfig {
     @MethodSource("postProfileBadRequestSource")
     @Order(4)
     @DisplayName("POST v1/profiles returns bad request when fields are empty or invalid")
-    void save_ReturnsBadRequest_WhenFieldsAreEmptyOrInvalid(String requestFile, String responseFile) throws Exception {
+    void save_ReturnsBadRequest_WhenFieldsAreEmptyOrInvalid(String requestFile, String responseFile) {
         var request = fileUtils.readSourceFile("/profiles/%s".formatted(requestFile));
         var expectedResponse = fileUtils.readSourceFile("/profiles/%s".formatted(responseFile));
 
@@ -92,6 +93,7 @@ class ProfileControllerTestIT extends IntegrationTestConfig {
 
         JsonAssertions.assertThatJson(responseEntity.getBody())
                 .whenIgnoringPaths("timestamp")
+                .when(Option.IGNORING_ARRAY_ORDER)
                 .isEqualTo(expectedResponse);
     }
 

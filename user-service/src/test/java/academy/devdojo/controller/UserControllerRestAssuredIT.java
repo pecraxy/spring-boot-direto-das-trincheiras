@@ -353,7 +353,6 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
                 .whenIgnoringPaths("timestamp")
                 .when(Option.IGNORING_ARRAY_ORDER)
                 .isEqualTo(expectedResponse);
-
     }
 
     private static Stream<Arguments> postUserBadRequestSource() {
