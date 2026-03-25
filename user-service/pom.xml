@@ -35,6 +35,7 @@
         <maven.compiler.release>21</maven.compiler.release>
         <json-unit-assertj.version>3.4.1</json-unit-assertj.version>
         <rest-assured.version>6.0.0</rest-assured.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.8.5</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
     <dependencies>
 
@@ -93,6 +94,13 @@
             <artifactId>datasource-proxy-spring-boot-starter</artifactId>
             <version>1.12.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.mapstruct</groupId>
