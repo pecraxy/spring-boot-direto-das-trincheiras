@@ -74,6 +74,7 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json(response));
     }
 
+
     @Test
     @DisplayName("GET v1/users?firstName=Sunless returns a list with found user when firstName exists")
     @Order(2)
