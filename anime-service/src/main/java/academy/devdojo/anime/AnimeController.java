@@ -1,6 +1,7 @@
 package academy.devdojo.anime;
 
 import academy.devdojo.domain.Anime;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("v1/animes")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Anime API", description = "Anime related endpoints")
 public class AnimeController {
 
     private final AnimeMapper mapper;
