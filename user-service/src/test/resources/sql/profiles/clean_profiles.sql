@@ -1,1 +1,3 @@
-DELETE FROM profile WHERE 1=1;
+DELETE
+FROM profile
+WHERE 1 = 1;

@@ -1,1 +1,3 @@
-DELETE FROM user WHERE 1=1;
+DELETE
+FROM user
+WHERE 1 = 1;

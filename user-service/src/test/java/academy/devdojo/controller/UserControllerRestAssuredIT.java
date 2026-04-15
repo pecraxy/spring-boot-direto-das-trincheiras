@@ -195,15 +195,20 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
         String request = fileUtils.readSourceFile("users/post-request-user-email-already-exists-400.json");
         String expectedResponse = fileUtils.readSourceFile("users/post-response-user-email-already-exists-400.json");
 
-        RestAssured.given()
+        String response = RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
-                .when()
                 .body(request)
+                .when()
                 .post(URL)
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body(Matchers.equalTo(expectedResponse))
-                .log().all();
+                .log().all()
+                .extract().response().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("timestamp")
+                .when(Option.IGNORING_ARRAY_ORDER)
+                .isEqualTo(expectedResponse);
     }
 
     @Test
@@ -280,15 +285,20 @@ class UserControllerRestAssuredIT extends IntegrationTestConfig {
 
         request = request.replace("1", users.getFirst().getId().toString());
 
-        RestAssured.given()
+        String response = RestAssured.given()
                 .contentType(ContentType.JSON).accept(ContentType.JSON)
                 .body(request)
                 .when()
                 .put(URL)
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body(Matchers.equalTo(expectedResponse))
-                .log().all();
+                .log().all()
+                .extract().response().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("timestamp")
+                .when(Option.IGNORING_ARRAY_ORDER)
+                .isEqualTo(expectedResponse);
     }
 
     @Test

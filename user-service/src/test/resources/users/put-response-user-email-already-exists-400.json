@@ -1,1 +1,7 @@
-{"status":400,"message":"Email nephis@example.com already exists"}
+{
+  "timestamp": "2026-04-15T14:26:05.476+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Email nephis@example.com already exists",
+  "path": "/v1/users"
+}

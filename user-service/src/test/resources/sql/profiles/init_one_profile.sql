@@ -1,1 +1,2 @@
-INSERT INTO profile (description, name) VALUES('Bebe Whisky. Fuma Skunk. Come Mulher Toda hora.', 'Dj Roca');
+INSERT INTO profile (description, name)
+VALUES ('Bebe Whisky. Fuma Skunk. Come Mulher Toda hora.', 'Dj Roca');

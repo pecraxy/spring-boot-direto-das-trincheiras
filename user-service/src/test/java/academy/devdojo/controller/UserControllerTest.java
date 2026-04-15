@@ -7,6 +7,7 @@ import academy.devdojo.exception.EmailAlreadyExistsException;
 import academy.devdojo.repository.ProfileRepository;
 import academy.devdojo.repository.UserProfileRepository;
 import academy.devdojo.repository.UserRepository;
+import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,6 +53,7 @@ class UserControllerTest {
 
     @MockitoBean
     private UserProfileRepository userProfileRepository;
+
 
     private List<User> userList;
 
@@ -154,17 +156,22 @@ class UserControllerTest {
     @DisplayName("POST v1/users throws EmailAlreadyExistsException when email is already used")
     void save_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyUsed() throws Exception {
         String request = fileUtils.readSourceFile("users/post-request-user-email-already-exists-400.json");
-        String response = fileUtils.readSourceFile("users/post-response-user-email-already-exists-400.json");
+        String expectedResponse = fileUtils.readSourceFile("users/post-response-user-email-already-exists-400.json");
         String emailAlreadyUsed = userUtils.newUserToCreateWithEmailAlreadyUsed().getEmail();
         BDDMockito.when(repository.save(ArgumentMatchers.any())).thenThrow(new EmailAlreadyExistsException("Email %s already exists".formatted(emailAlreadyUsed)));
-        mockMvc.perform(MockMvcRequestBuilders
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                         .post(URL)
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().json(response));
+                .andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponse);
+
     }
 
     @Test
@@ -216,15 +223,19 @@ class UserControllerTest {
         BDDMockito.when(repository.findById(id)).thenReturn(foundUser);
         BDDMockito.when(repository.save(ArgumentMatchers.any())).thenThrow(new EmailAlreadyExistsException("Email %s already exists".formatted(emailAlreadyUsed)));
         String request = fileUtils.readSourceFile("users/put-request-user-email-already-exists-400.json");
-        String response = fileUtils.readSourceFile("users/put-response-user-email-already-exists-400.json");
+        String expectedResponse = fileUtils.readSourceFile("users/put-response-user-email-already-exists-400.json");
 
-        mockMvc.perform(MockMvcRequestBuilders
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                         .put(URL)
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().json(response));
+                .andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponse);
     }
 
     @Test
