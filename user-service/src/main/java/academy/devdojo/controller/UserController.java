@@ -1,8 +1,8 @@
 package academy.devdojo.controller;
 
 import academy.devdojo.domain.User;
+import academy.devdojo.exception.ApiError;
 import academy.devdojo.exception.DefaultErrorMessage;
-import academy.devdojo.exception.EmailAlreadyExistsException;
 import academy.devdojo.mapper.UserMapper;
 import academy.devdojo.request.UserPostRequest;
 import academy.devdojo.request.UserPutRequest;
@@ -19,11 +19,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -37,12 +34,12 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "Get All Users", description = "Get all users available in the system",
-        responses = {
-            @ApiResponse(description = "List all users",
-                    responseCode = "200",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = UserGetResponse.class)))
-            )
-        }
+            responses = {
+                    @ApiResponse(description = "List all users",
+                            responseCode = "200",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = UserGetResponse.class)))
+                    )
+            }
     )
     public ResponseEntity<List<UserGetResponse>> findAll(@RequestParam(required = false) String firstName) {
         List<User> foundUsers = service.findAll(firstName);
@@ -77,14 +74,10 @@ public class UserController {
                             responseCode = "201",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserPostResponse.class))
                     ),
-                    @ApiResponse(description = "Validation error",
+                    @ApiResponse(description = "Bad request",
                             responseCode = "400",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DefaultErrorMessage.class))
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))
                     )
-//                    @ApiResponse(description = "Validation Error",
-//                            responseCode = "400",
-//                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class))
-//                    ),
             }
     )
     public ResponseEntity<UserPostResponse> save(@RequestBody @Valid UserPostRequest request) {
@@ -96,10 +89,10 @@ public class UserController {
     @DeleteMapping("{id}")
     @Operation(summary = "Deletes an User by its id",
             responses = {
-                @ApiResponse(description = "User Deleted", responseCode = "204"),
-                @ApiResponse(description = "User ID not not found ", responseCode = "404",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DefaultErrorMessage.class))
-                )
+                    @ApiResponse(description = "User Deleted", responseCode = "204"),
+                    @ApiResponse(description = "User ID not not found ", responseCode = "404",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DefaultErrorMessage.class))
+                    )
             }
     )
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -113,7 +106,7 @@ public class UserController {
                     @ApiResponse(description = "User updated", responseCode = "204"),
                     @ApiResponse(description = "Validation error",
                             responseCode = "400",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DefaultErrorMessage.class))
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))
                     )
             }
     )

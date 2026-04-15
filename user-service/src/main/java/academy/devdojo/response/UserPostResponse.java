@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class UserPostResponse {
-    @Schema(example = "99", description = "Unique Identifier created to new User")
+    @Schema(description = "User's id", example = "99")
     private Long id;
 }
