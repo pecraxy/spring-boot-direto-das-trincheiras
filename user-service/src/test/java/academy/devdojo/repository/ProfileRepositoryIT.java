@@ -19,7 +19,7 @@ import java.util.List;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Import({ProfileUtils.class})
 @Slf4j
-class ProfileRepositoryTest extends IntegrationTestConfig {
+class ProfileRepositoryIT extends IntegrationTestConfig {
 
     @Autowired
     private ProfileRepository repository;

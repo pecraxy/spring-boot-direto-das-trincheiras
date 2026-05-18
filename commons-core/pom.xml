@@ -13,6 +13,19 @@
     <artifactId>commons-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>commons-core</name>
-    <description>Classes utilizadas em todos os Microserviços </description>
+    <description>Classes utilizadas em todos os Microserviços</description>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
